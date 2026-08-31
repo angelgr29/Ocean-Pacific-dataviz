@@ -88,6 +88,7 @@
       splashEyebrow.textContent = chapter.eyebrow || "";
       splashTitle.textContent = chapter.title || "";
       splashSubtitle.textContent = chapter.subtitle || "";
+      splash.dataset.chapter = chapter.slug || "";
       splash.classList.toggle("theme-journal", chapter.theme === "journal");
       splash.classList.add("visible");
       splash.setAttribute("aria-hidden", "false");

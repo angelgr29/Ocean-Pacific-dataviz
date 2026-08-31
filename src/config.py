@@ -95,7 +95,7 @@ BOOK_CHAPTERS = [
         "eyebrow": "The Tourism Conservation Paradox in Pacific Island Countries",
         "title": "Islands at the crossroads",
         "subtitle": (
-            "A six-chapter data story exploring how Pacific Island tourism depends on "
+            "A five-chapter data story exploring how Pacific Island tourism depends on "
             "natural ecosystems and how environmental change puts that relationship under pressure."
         ),
         "theme": "green",
@@ -141,9 +141,9 @@ BOOK_CHAPTERS = [
         "slug": "part5",
         "type": "iframe",
         "file": "part5.html",
-        "eyebrow": "Chapter 5 · Synthesis",
-        "title": "The Pacific tourism story",
-        "subtitle": "Connecting economy, place, environment, and choice.",
+        "eyebrow": "Chapter 5 · Policies",
+        "title": "Managing Tourism for the Long Term",
+        "subtitle": "Effective public policy and sustainable tourism principles can help ensure that tourism supports development without compromising long-term resilience.",
         "theme": "green",
     },
     {

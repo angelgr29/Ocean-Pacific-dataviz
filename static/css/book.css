@@ -215,6 +215,10 @@ html, body {
     color: rgba(232, 245, 233, 0.88);
 }
 
+.chapter-splash[data-chapter="part5"] .splash-subtitle {
+    max-width: 680px;
+}
+
 /* ── Page peel animation ── */
 .page-peel {
     position: fixed;
