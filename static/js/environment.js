@@ -1,6 +1,15 @@
 function initEnvironmentMap() {
   const RLI_INDICATOR = "15.5.1 Red List Index";
 
+  const INDICATOR_SOURCES = {
+    "Surface Temperature anomalies":
+      "Pacific Community (SPC), Surface Temperature Anomaly (ST_ANOM), Pacific Data Hub",
+    "Sea Surface Temperature anomalies":
+      "Pacific Community (SPC), Sea Surface Temperature Anomaly (SST_ANOM), Pacific Data Hub",
+    [RLI_INDICATOR]:
+      "Pacific Community (SPC), Red List Index (ER_RSK_LST), Pacific Data Hub",
+  };
+
   if (!window.PACIFIC_DATA) {
     console.error("PACIFIC_DATA missing — rebuild with: python3 build.py");
     return;
@@ -37,6 +46,7 @@ function initEnvironmentMap() {
   const regionalValue = document.getElementById("regional-value");
   const regionalIndicator = document.getElementById("regional-indicator");
   const mapWrapper = document.querySelector(".map-wrapper");
+  const climateDataSource = document.getElementById("climate-data-source");
 
   const story = createStoryMomentController({
     dimEl: document.getElementById("story-dim"),
@@ -254,6 +264,14 @@ function initEnvironmentMap() {
     updateLegend();
   }
 
+  function updateDataSource(indicator) {
+    if (!climateDataSource) return;
+    const sourceText = INDICATOR_SOURCES[indicator];
+    if (sourceText) {
+      climateDataSource.textContent = `Source: ${sourceText}`;
+    }
+  }
+
   function loadIndicator(indicator) {
     currentIndicator = indicator;
     story.hide(true);
@@ -265,6 +283,7 @@ function initEnvironmentMap() {
     }
 
     setViewMode("climate");
+    updateDataSource(indicator);
 
     availableYears = Array.from(new Set(
       environmentData
