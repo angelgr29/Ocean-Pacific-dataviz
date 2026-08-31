@@ -37,8 +37,12 @@ html.book-embed #pacific-map {
     width: 100%;
 }
 
+html.book-embed .indicator-nav {
+    padding: 8px 12px 0;
+}
+
 html.book-embed .controls {
-    padding: 0 4px;
+    padding: 0;
 }
 
 html.book-embed.checkpoint-page,

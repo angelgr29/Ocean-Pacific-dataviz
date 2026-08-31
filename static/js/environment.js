@@ -342,6 +342,26 @@ function initEnvironmentMap() {
     story.hide();
   }
 
+  function setupIndicatorHint() {
+    const hint = document.getElementById("indicator-hint");
+    if (!hint) return;
+
+    const dismissHint = () => {
+      hint.classList.add("is-dismissed");
+      document.querySelectorAll(".indicator-button").forEach((btn) => btn.classList.remove("hint-pulse"));
+    };
+
+    document.querySelectorAll(".indicator-button:not(.active)").forEach((btn) => {
+      btn.classList.add("hint-pulse");
+    });
+
+    document.querySelectorAll(".indicator-button").forEach((button) => {
+      button.addEventListener("click", dismissHint, { once: true });
+    });
+
+    setTimeout(dismissHint, 12000);
+  }
+
   function wireControls() {
     playButton.addEventListener("click", () => {
       if (isPlaying) stopAnimation();
@@ -364,6 +384,8 @@ function initEnvironmentMap() {
         loadIndicator(button.dataset.indicator);
       });
     });
+
+    setupIndicatorHint();
   }
 }
 

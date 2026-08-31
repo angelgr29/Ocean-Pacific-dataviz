@@ -42,11 +42,43 @@
     line-height: 1;
 }
 
+.indicator-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-top: 2px;
+}
+
+.indicator-hint {
+    margin: 0;
+    color: #6B936F;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    text-align: center;
+    max-width: 520px;
+    line-height: 1.45;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.45s ease, transform 0.45s ease, max-height 0.45s ease, margin 0.45s ease;
+}
+
+.indicator-hint.is-dismissed {
+    opacity: 0;
+    transform: translateY(-4px);
+    max-height: 0;
+    margin: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
 .controls {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
-    margin-bottom: 14px;
 }
 
 .indicator-button {
@@ -66,6 +98,19 @@
     background: #1B5E20;
     border-color: #1B5E20;
     color: #FFFFFF;
+}
+
+.indicator-button.hint-pulse {
+    animation: indicatorTabPulse 2.2s ease-in-out 2;
+}
+
+@keyframes indicatorTabPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(27, 94, 32, 0);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(27, 94, 32, 0.14);
+    }
 }
 
 .location-line {
