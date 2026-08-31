@@ -92,11 +92,6 @@ def _copy_static() -> None:
 
     _copy_part5_image(dest)
 
-    docs_dest = dest / "docs"
-    docs_dest.mkdir(parents=True, exist_ok=True)
-    if RESOURCES_PDF_PATH.exists():
-        shutil.copy2(RESOURCES_PDF_PATH, docs_dest / "resources.pdf")
-
 
 def _theme_context(extra_css: list[str] | None = None, extra_js: list[str] | None = None) -> dict:
     ctx: dict = {
@@ -222,7 +217,7 @@ def build_conclusion() -> str:
 
 
 def build_resources() -> str:
-    pdf_available = (OUTPUT_DIR / "static" / "docs" / "resources.pdf").exists()
+    pdf_available = RESOURCES_PDF_PATH.exists()
     return _render(
         "resources.html",
         {

@@ -11,8 +11,9 @@ IMAGES_PART2_DIR = ROOT / "images" / "PART2"
 IMAGES_ATTRACTIONS_DIR = ROOT / "images" / "drive-download-20260831T022305Z-1-001"
 PART5_TEMPLATE_DIR = IMAGES_PART2_DIR / "Part5_template"
 PART5_OUTPUT_IMAGE = "static/images/part5/cover.jpeg"
-RESOURCES_PDF_PATH = ROOT / "static" / "docs" / "resources.pdf"
-RESOURCES_PDF_URL = "static/docs/resources.pdf"
+RESOURCES_PDF_FILENAME = "references_pacific_dataviz-2.pdf"
+RESOURCES_PDF_PATH = ROOT / "static" / "docs" / RESOURCES_PDF_FILENAME
+RESOURCES_PDF_URL = f"static/docs/{RESOURCES_PDF_FILENAME}"
 
 WORLD_ATLAS_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
 
