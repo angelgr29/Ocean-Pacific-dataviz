@@ -1,0 +1,11 @@
+Country,Attraction,Experience,Description,Longitude,Latitude,Flag,Image
+Fiji,Coral Coast,Coral reefs · Beaches · Snorkeling,"A long stretch of tropical coastline known for beaches, shallow coral reefs and accessible snorkeling.",178.0650,-17.7134,🇫🇯,images/fiji_coral_coast.jpg
+Kiribati,Kiritimati Lagoon,Lagoon · Fishing · Marine wildlife,"One of the Pacific vast lagoon environments, surrounded by coral ecosystems and remote island landscapes.",-157.3630,1.8709,🇰🇮,images/kiribati_kiritimati.jpg
+Solomon Islands,Marovo Lagoon,Diving · Lagoon · Coral reefs,"A major lagoon system characterized by coral reefs, tropical islands and exceptional diving environments.",160.1562,-9.6457,🇸🇧,images/solomon_marovo.jpg
+Tonga,Whale Watching,Whales · Marine wildlife · Sailing,Tonga is internationally known for seasonal encounters with humpback whales in its tropical waters.,-175.1982,-21.1790,🇹🇴,images/tonga_whales.jpg
+Vanuatu,Blue Holes,Swimming · Rainforest · Freshwater,"Natural freshwater pools surrounded by dense tropical vegetation, particularly famous on Espiritu Santo.",167.9596,-15.3767,🇻🇺,images/vanuatu_blue_holes.jpg
+French Polynesia,Bora Bora Lagoon,Lagoon · Beaches · Snorkeling,"Turquoise lagoon waters, coral reefs and dramatic volcanic landscapes define one of Polynesia's best-known destinations.",-149.4068,-17.6797,🇵🇫,images/french_polynesia_bora_bora.jpg
+Guam,Tumon Bay,Beaches · Snorkeling · Coastal tourism,"Guam's principal tourism district combines a protected bay, beaches, hotels and accessible snorkeling.",144.7937,13.4443,🇬🇺,images/guam_tumon_bay.jpg
+Marshall Islands,Bikini Atoll,Diving · History · Coral reefs,A remote atoll internationally associated with both underwater cultural heritage and marine biodiversity.,171.1845,7.1315,🇲🇭,images/marshall_bikini_atoll.jpg
+Palau,Rock Islands,Diving · Kayaking · Marine ecosystems,Hundreds of forest-covered limestone islands surrounded by lagoons and exceptionally diverse marine ecosystems.,134.5825,7.5150,🇵🇼,images/palau_rock_islands.jpg
+Samoa,To Sua Ocean Trench,Swimming · Coastal landscape · Nature,A dramatic natural swimming hole connected to the ocean and surrounded by lush tropical vegetation.,-172.1046,-13.7590,🼼🇸,images/samoa_to_sua.jpg

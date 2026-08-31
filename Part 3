@@ -1,0 +1,3338 @@
+# ============================================================
+# PACIFIC ENVIRONMENTAL CHANGE
+# Static data circles + location dots + timeline animation
+#
+# final_dataset must contain:
+# Country | Year | Indicator | Value
+#
+# Output: standalone interactive HTML
+# ============================================================
+
+
+# ============================================================
+# 0. PACKAGES
+# ============================================================
+
+# install.packages(c("dplyr", "jsonlite", "rstudioapi"))
+
+library(dplyr)
+library(jsonlite)
+
+
+# ============================================================
+# 1. INDICATORS
+# ============================================================
+
+indicators <- c(
+  "Surface Temperature anomalies",
+  "Sea Surface Temperature anomalies",
+  "Precipitation anomalies",
+  "15.5.1 Red List Index"
+)
+
+
+# ============================================================
+# 2. PREPARE DATA
+# ============================================================
+
+env_data <- final_dataset %>%
+  
+  filter(
+    Indicator %in% indicators
+  ) %>%
+  
+  mutate(
+    
+    Year = as.numeric(Year),
+    
+    Value = as.numeric(Value),
+    
+    Country = case_when(
+      
+      Country %in% c(
+        "Micronesia, Federated State of",
+        "Micronesia (Federated States of)",
+        "Federated States of Micronesia"
+      ) ~ "Micronesia",
+      
+      TRUE ~ Country
+    )
+    
+  ) %>%
+  
+  filter(
+    !is.na(Country),
+    !is.na(Year),
+    !is.na(Value)
+  )
+
+
+# ============================================================
+# 3. PACIFIC LOCATIONS
+# ============================================================
+#
+# Longitude / Latitude:
+# approximate geographic location.
+#
+# MarkerDx / MarkerDy:
+# only move the LARGE data circle when several countries
+# are close together.
+#
+# The small location dot ALWAYS stays at the real location.
+# ============================================================
+
+territories <- data.frame(
+  
+  Country = c(
+    "Northern Mariana Islands",
+    "Guam",
+    "Palau",
+    "Micronesia",
+    "Marshall Islands",
+    "Nauru",
+    "Kiribati",
+    "Solomon Islands",
+    "Tuvalu",
+    "Tokelau",
+    "Vanuatu",
+    "Fiji",
+    "Samoa",
+    "Tonga",
+    "New Caledonia",
+    "Wallis and Futuna",
+    "American Samoa",
+    "Niue",
+    "Cook Islands",
+    "French Polynesia",
+    "Pitcairn"
+  ),
+  
+  Longitude = c(
+    145.70,
+    144.79,
+    134.58,
+    158.20,
+    171.18,
+    166.93,
+    -157.36,
+    160.16,
+    179.20,
+    -171.85,
+    167.96,
+    178.07,
+    -172.10,
+    -175.20,
+    165.62,
+    -176.20,
+    -170.70,
+    -169.87,
+    -159.78,
+    -149.41,
+    -130.10
+  ),
+  
+  Latitude = c(
+    15.20,
+    13.44,
+    7.52,
+    6.90,
+    7.13,
+    -0.52,
+    1.87,
+    -9.65,
+    -8.52,
+    -9.20,
+    -15.38,
+    -17.71,
+    -13.76,
+    -21.18,
+    -20.90,
+    -13.80,
+    -14.27,
+    -19.05,
+    -21.24,
+    -17.68,
+    -24.38
+  ),
+  
+  Flag = c(
+    "🇲🇵",
+    "🇬🇺",
+    "🇵🇼",
+    "🇫🇲",
+    "🇲🇭",
+    "🇳🇷",
+    "🇰🇮",
+    "🇸🇧",
+    "🇹🇻",
+    "🇹🇰",
+    "🇻🇺",
+    "🇫🇯",
+    "🇼🇸",
+    "🇹🇴",
+    "🇳🇨",
+    "🇼🇫",
+    "🇦🇸",
+    "🇳🇺",
+    "🇨🇰",
+    "🇵🇫",
+    "🇵🇳"
+  ),
+  
+  # ----------------------------------------------------------
+  # MOVE ONLY THE BIG CIRCLE
+  # ----------------------------------------------------------
+  
+  MarkerDx = c(
+    0,    # Northern Mariana
+    0,    # Guam
+    0,    # Palau
+    0,    # Micronesia
+    0,    # Marshall
+    0,    # Nauru
+    0,    # Kiribati
+    0,    # Solomon
+    10,    # Tuvalu
+    0,    # Tokelau
+    -10,    # Vanuatu
+    10,    # Fiji
+    22,    # Samoa
+    -18,    # Tonga
+    0,    # New Caledonia
+    -12,    # Wallis
+    10,    # American Samoa
+    10,    # Niue
+    0,    # Cook Islands
+    0,    # French Polynesia
+    0     # Pitcairn
+  ),
+  
+  MarkerDy = c(
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -8,
+    0,
+    5,
+    -4,
+    -10,
+    18,
+    0,
+    -12,
+    10,
+    5,
+    0,
+    0,
+    0
+  ),
+  
+  # ----------------------------------------------------------
+  # LABEL POSITION RELATIVE TO BIG CIRCLE
+  # ----------------------------------------------------------
+  
+  LabelDx = c(
+    29,
+    29,
+    -29,
+    29,
+    29,
+    29,
+    29,
+    29,
+    29,
+    29,
+    -29,
+    29,
+    29,
+    -29,
+    -29,
+    -29,
+    29,
+    29,
+    29,
+    29,
+    29
+  ),
+  
+  LabelDy = c(
+    4,4,4,4,4,4,4,4,4,4,
+    4,4,4,4,4,4,4,4,4,4,4
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+
+# ============================================================
+# 4. KEEP ONLY COUNTRIES PRESENT IN final_dataset
+# ============================================================
+
+territories <- territories %>%
+  
+  filter(
+    Country %in% unique(env_data$Country)
+  )
+
+
+# ============================================================
+# 5. JSON
+# ============================================================
+
+environment_json <- toJSON(
+  
+  env_data %>%
+    select(
+      Country,
+      Year,
+      Indicator,
+      Value
+    ),
+  
+  dataframe = "rows",
+  auto_unbox = TRUE,
+  na = "null"
+)
+
+
+territories_json <- toJSON(
+  
+  territories,
+  
+  dataframe = "rows",
+  auto_unbox = TRUE,
+  na = "null"
+)
+
+
+# ============================================================
+# 6. HTML
+# ============================================================
+
+html <- paste0('
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>
+Pacific Environmental Change
+</title>
+
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script src="https://unpkg.com/topojson-client@3"></script>
+
+
+<style>
+
+
+/* ========================================================
+   GLOBAL
+======================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    background: #F7FBF7;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color: #1B5E20;
+}
+
+
+.page {
+
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding:
+        28px 34px 34px 34px;
+}
+
+
+/* ========================================================
+   HEADER
+======================================================== */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-end;
+
+    gap: 30px;
+
+    margin-bottom: 17px;
+}
+
+
+.eyebrow {
+
+    color: #66BB6A;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 2.4px;
+
+    text-transform: uppercase;
+}
+
+
+h1 {
+
+    margin: 5px 0 0 0;
+
+    color: #1B5E20;
+
+    font-size: 43px;
+
+    line-height: 1;
+
+    letter-spacing: -1.5px;
+}
+
+
+.year-display {
+
+    color: #1B5E20;
+
+    font-size: 42px;
+
+    font-weight: 750;
+
+    line-height: 1;
+}
+
+
+/* ========================================================
+   CONTROLS
+======================================================== */
+
+.controls {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 14px;
+}
+
+
+.indicator-button {
+
+    border:
+        1px solid #A5D6A7;
+
+    background:
+        #EEF7EF;
+
+    color:
+        #527A57;
+
+    border-radius:
+        999px;
+
+    padding:
+        9px 15px;
+
+    cursor:
+        pointer;
+
+    font-size:
+        12px;
+
+    font-weight:
+        650;
+
+    transition:
+        all 0.2s ease;
+}
+
+
+.indicator-button:hover {
+
+    background:
+        #E3F1E4;
+}
+
+
+.indicator-button.active {
+
+    background:
+        #1B5E20;
+
+    border-color:
+        #1B5E20;
+
+    color:
+        #FFFFFF;
+}
+
+
+/* ========================================================
+   MAP
+======================================================== */
+
+.map-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 780px;
+
+    overflow: hidden;
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        24px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #E8F5E9 0%,
+            #F5FAF5 52%,
+            #E8F5E9 100%
+        );
+}
+
+
+#pacific-map {
+
+    display: block;
+
+    width: 100%;
+
+    height: 780px;
+}
+
+
+/* ========================================================
+   MAP
+======================================================== */
+
+.sphere {
+
+    fill:
+        #ECF7ED;
+}
+
+
+.graticule {
+
+    fill:
+        none;
+
+    stroke:
+        #A5D6A7;
+
+    stroke-width:
+        0.6;
+
+    stroke-opacity:
+        0.32;
+}
+
+
+.land {
+
+    fill:
+        #B0D8B3;
+
+    stroke:
+        #FFFFFF;
+
+    stroke-width:
+        0.7;
+}
+
+
+.ocean-title {
+
+    fill:
+        #1B5E20;
+
+    opacity:
+        0.045;
+
+    font-size:
+        42px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        13px;
+}
+
+
+/* ========================================================
+   LOCATION CONNECTION
+======================================================== */
+
+.location-line {
+
+    fill: none;
+
+    stroke:
+        #456D4A;
+
+    stroke-width:
+        1;
+
+    stroke-opacity:
+        0.28;
+
+    stroke-dasharray:
+        2 3;
+}
+
+
+/* ========================================================
+   LARGE DATA CIRCLE
+======================================================== */
+
+.data-circle {
+
+    stroke-width:
+        2.2;
+
+    stroke-opacity:
+        0.90;
+
+    /*
+    Size NEVER changes.
+    Only color changes.
+    */
+
+    transition:
+        fill 0.3s ease,
+        stroke 0.3s ease;
+}
+
+
+/* subtle outer ring */
+
+.data-circle-ring {
+
+    fill: none;
+
+    stroke-width:
+        1.2;
+
+    opacity:
+        0.18;
+
+    pointer-events:
+        none;
+}
+
+
+/* highlight gives the circle the same
+   visual treatment as your tourism markers */
+
+.circle-highlight {
+
+    fill:
+        rgba(255,255,255,0.32);
+
+    pointer-events:
+        none;
+}
+
+
+/* ========================================================
+   TRUE LOCATION DOT
+======================================================== */
+
+.location-dot-outer {
+
+    fill:
+        #F4FAF4;
+
+    stroke:
+        #1B5E20;
+
+    stroke-width:
+        1.4;
+}
+
+
+.location-dot {
+
+    fill:
+        #1B5E20;
+}
+
+
+/* ========================================================
+   COUNTRY LABEL
+======================================================== */
+
+.country-label {
+
+    fill:
+        #1B5E20;
+
+    font-weight:
+        750;
+
+    font-size:
+        10px;
+
+    paint-order:
+        stroke;
+
+    stroke:
+        #F4FAF4;
+
+    stroke-width:
+        4px;
+
+    stroke-linejoin:
+        round;
+
+    pointer-events:
+        none;
+}
+
+
+/* ========================================================
+   REGIONAL AVERAGE BOX
+======================================================== */
+
+.regional-box {
+
+    position:
+        absolute;
+
+    left:
+        24px;
+
+    top:
+        24px;
+
+    width:
+        245px;
+
+    padding:
+        15px 17px;
+
+    background:
+        rgba(247,251,247,0.94);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        16px;
+
+    z-index:
+        20;
+}
+
+
+.regional-tag {
+
+    color:
+        #6B936F;
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.7px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.regional-year {
+
+    margin-top:
+        5px;
+
+    color:
+        #6B936F;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        0.3px;
+}
+
+
+.regional-value {
+
+    margin-top:
+        4px;
+
+    color:
+        #1B5E20;
+
+    font-size:
+        38px;
+
+    line-height:
+        1;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        -1.3px;
+}
+
+
+.regional-indicator {
+
+    margin-top:
+        7px;
+
+    color:
+        #527A57;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.35;
+}
+
+
+/* ========================================================
+   LEGEND
+======================================================== */
+
+.legend {
+
+    position:
+        absolute;
+
+    left:
+        24px;
+
+    bottom:
+        24px;
+
+    width:
+        205px;
+
+    padding:
+        12px 14px;
+
+    background:
+        rgba(247,251,247,0.94);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        14px;
+}
+
+
+.legend-title {
+
+    margin-bottom:
+        8px;
+
+    color:
+        #1B5E20;
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.4px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.legend-gradient {
+
+    width:
+        100%;
+
+    height:
+        11px;
+
+    border-radius:
+        20px;
+
+    margin-bottom:
+        5px;
+}
+
+
+.legend-values {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    color:
+        #6E876F;
+
+    font-size:
+        9px;
+}
+
+
+/* ========================================================
+   TIMELINE
+======================================================== */
+
+.timeline-panel {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    bottom:
+        23px;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(
+            660px,
+            calc(100% - 500px)
+        );
+
+    padding:
+        13px 17px;
+
+    background:
+        rgba(247,251,247,0.95);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        17px;
+}
+
+
+.timeline-row {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        13px;
+}
+
+
+#play-button {
+
+    width:
+        40px;
+
+    height:
+        40px;
+
+    border:
+        none;
+
+    border-radius:
+        50%;
+
+    flex:
+        0 0 auto;
+
+    cursor:
+        pointer;
+
+    background:
+        #1B5E20;
+
+    color:
+        white;
+
+    font-size:
+        15px;
+}
+
+
+#year-slider {
+
+    width:
+        100%;
+
+    accent-color:
+        #1B5E20;
+}
+
+
+.timeline-years {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    margin-left:
+        53px;
+
+    margin-top:
+        4px;
+
+    color:
+        #728B76;
+
+    font-size:
+        9px;
+}
+
+
+/* ========================================================
+   NOTE
+======================================================== */
+
+.note {
+
+    position:
+        absolute;
+
+    right:
+        23px;
+
+    bottom:
+        23px;
+
+    width:
+        220px;
+
+    padding:
+        11px 13px;
+
+    background:
+        rgba(247,251,247,0.92);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        14px;
+
+    color:
+        #6B806D;
+
+    font-size:
+        9px;
+
+    line-height:
+        1.45;
+}
+
+
+/* ========================================================
+   1980s TREND CALLOUT
+======================================================== */
+
+.trend-note {
+
+    position:
+        absolute;
+
+    right:
+        23px;
+
+    bottom:
+        23px;
+
+    width:
+        285px;
+
+    padding:
+        14px 16px;
+
+    background:
+        rgba(247,251,247,0.96);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        14px;
+
+    color:
+        #3F6844;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.45;
+
+    font-weight:
+        650;
+
+    opacity:
+        0;
+
+    transform:
+        translateY(8px);
+
+    pointer-events:
+        none;
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+
+    z-index:
+        25;
+}
+
+.trend-note.visible {
+
+    opacity:
+        1;
+
+    transform:
+        translateY(0);
+}
+
+.trend-note-title {
+
+    margin-bottom:
+        4px;
+
+    color:
+        #1B5E20;
+
+    font-size:
+        9px;
+
+    font-weight:
+        850;
+
+    letter-spacing:
+        1.3px;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ========================================================
+   RESPONSIVE
+======================================================== */
+
+@media (max-width: 900px) {
+
+    .timeline-panel {
+
+        width:
+            calc(100% - 45px);
+
+        bottom:
+            95px;
+    }
+
+
+    .note {
+
+        display:
+            none;
+    }
+
+
+    .trend-note {
+
+        right:
+            20px;
+
+        bottom:
+            20px;
+
+        width:
+            min(285px, calc(100% - 40px));
+    }
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<div class="header">
+
+    <div>
+
+        <div class="eyebrow">
+            Pacific Environment
+        </div>
+
+        <h1>
+            Paradise under pressure
+        </h1>
+
+    </div>
+
+
+    <div
+        id="year-display"
+        class="year-display">
+    </div>
+
+</div>
+
+
+
+<!-- ======================================================
+     INDICATOR BUTTONS
+====================================================== -->
+
+<div class="controls">
+
+
+    <button
+        class="indicator-button active"
+        data-indicator="Surface Temperature anomalies">
+
+        Land temperature
+
+    </button>
+
+
+    <button
+        class="indicator-button"
+        data-indicator="Sea Surface Temperature anomalies">
+
+        Ocean temperature
+
+    </button>
+
+
+    <button
+        class="indicator-button"
+        data-indicator="Precipitation anomalies">
+
+        Precipitation
+
+    </button>
+
+
+    <button
+        class="indicator-button"
+        data-indicator="15.5.1 Red List Index">
+
+        Biodiversity
+
+    </button>
+
+
+</div>
+
+
+
+<!-- ======================================================
+     MAP
+====================================================== -->
+
+<div class="map-wrapper">
+
+
+<svg id="pacific-map"></svg>
+
+
+<!-- ====================================================
+     REGIONAL AVERAGE
+===================================================== -->
+
+<div class="regional-box">
+
+    <div class="regional-tag">
+        Pacific territories mean
+    </div>
+
+    <div
+        id="regional-year"
+        class="regional-year">
+    </div>
+
+    <div
+        id="regional-value"
+        class="regional-value">
+    </div>
+
+    <div
+        id="regional-indicator"
+        class="regional-indicator">
+    </div>
+
+</div>
+
+
+
+<!-- ====================================================
+     LEGEND
+===================================================== -->
+
+<div class="legend">
+
+    <div
+        id="legend-title"
+        class="legend-title">
+    </div>
+
+    <div
+        id="legend-gradient"
+        class="legend-gradient">
+    </div>
+
+    <div class="legend-values">
+
+        <span id="legend-min"></span>
+
+        <span id="legend-mid"></span>
+
+        <span id="legend-max"></span>
+
+    </div>
+
+</div>
+
+
+
+<!-- ====================================================
+     TIMELINE
+===================================================== -->
+
+<div class="timeline-panel">
+
+
+    <div class="timeline-row">
+
+        <button id="play-button">
+            ▶
+        </button>
+
+        <input
+            id="year-slider"
+            type="range">
+
+    </div>
+
+
+    <div class="timeline-years">
+
+        <span id="year-min"></span>
+
+        <span id="year-max"></span>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ====================================================
+     1980s TREND CALLOUT
+===================================================== -->
+
+<div
+    id="trend-note"
+    class="trend-note">
+
+    <div class="trend-note-title">
+        Trend shift
+    </div>
+
+    <div>
+        During the 1980s, the regional mean begins to show
+        a more sustained upward shift.
+    </div>
+
+</div>
+
+
+<!-- ====================================================
+     NOTE
+===================================================== -->
+
+<div class="note">
+
+    The small marker shows the approximate geographic
+    location. Circle color represents the indicator value
+    for each territory. Temperature anomalies are shown in
+    °C relative to the 1971–2000 climatological baseline.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ==========================================================
+   DATA
+========================================================== */
+
+const environmentData =
+',
+environment_json,
+';
+
+
+const territories =
+',
+territories_json,
+';
+
+
+/* ==========================================================
+   INDICATOR CONFIGURATION
+========================================================== */
+
+const indicatorConfig = {
+
+
+    "Surface Temperature anomalies": {
+
+        label:
+            "Surface temperature anomaly",
+
+        type:
+            "diverging",
+
+        low:
+            "#396F9E",
+
+        neutral:
+            "#F0EFE8",
+
+        high:
+            "#A52E25",
+
+        decimals:
+            2,
+
+        unit:
+            "°C",
+
+        baseline:
+            "Relative to 1971–2000 baseline"
+    },
+
+
+    "Sea Surface Temperature anomalies": {
+
+        label:
+            "Sea surface temperature anomaly",
+
+        type:
+            "diverging",
+
+        low:
+            "#3F78A3",
+
+        neutral:
+            "#F1EFE8",
+
+        high:
+            "#A52D24",
+
+        decimals:
+            2,
+
+        unit:
+            "°C",
+
+        baseline:
+            "Relative to 1971–2000 baseline"
+    },
+
+
+    "Precipitation anomalies": {
+
+        label:
+            "Precipitation anomaly",
+
+        type:
+            "diverging",
+
+        low:
+            "#9C6A45",
+
+        neutral:
+            "#F2EFE8",
+
+        high:
+            "#347BA2",
+
+        decimals:
+            2
+    },
+
+
+    "15.5.1 Red List Index": {
+
+        label:
+            "Red List Index",
+
+        type:
+            "sequential",
+
+        low:
+            "#8B593A",
+
+        middle:
+            "#CEB884",
+
+        high:
+            "#4E8455",
+
+        decimals:
+            3
+    }
+
+};
+
+
+/* ==========================================================
+   SVG
+========================================================== */
+
+const svg =
+    d3.select(
+        "#pacific-map"
+    );
+
+
+const wrapper =
+    document.querySelector(
+        ".map-wrapper"
+    );
+
+
+const width =
+    wrapper.clientWidth;
+
+
+const height =
+    780;
+
+
+svg
+
+    .attr(
+        "viewBox",
+        `0 0 ${width} ${height}`
+    )
+
+    .attr(
+        "preserveAspectRatio",
+        "xMidYMid meet"
+    );
+
+
+/* ==========================================================
+   PACIFIC PROJECTION
+========================================================== */
+/*
+You requested zoom = 0.55.
+
+Previous maps used approximately 0.255.
+
+This intentionally brings the Pacific islands much closer.
+*/
+
+const projection =
+
+    d3.geoNaturalEarth1()
+
+        .rotate([
+            -170,
+            0
+        ])
+
+        .center([
+            0,
+            -5
+        ])
+
+        .scale(
+            width * 0.55
+        )
+
+        .translate([
+            width / 2,
+            height / 2 + 20
+        ]);
+
+
+const path =
+    d3.geoPath(
+        projection
+    );
+
+
+/* ==========================================================
+   SPHERE
+========================================================== */
+
+svg
+
+    .append("path")
+
+    .datum({
+        type:
+            "Sphere"
+    })
+
+    .attr(
+        "class",
+        "sphere"
+    )
+
+    .attr(
+        "d",
+        path
+    );
+
+
+/* ==========================================================
+   GRATICULE
+========================================================== */
+
+svg
+
+    .append("path")
+
+    .datum(
+        d3.geoGraticule10()
+    )
+
+    .attr(
+        "class",
+        "graticule"
+    )
+
+    .attr(
+        "d",
+        path
+    );
+
+
+/* ==========================================================
+   OCEAN LABEL
+========================================================== */
+
+svg
+
+    .append("text")
+
+    .attr(
+        "class",
+        "ocean-title"
+    )
+
+    .attr(
+        "x",
+        width / 2
+    )
+
+    .attr(
+        "y",
+        height / 2
+    )
+
+    .attr(
+        "text-anchor",
+        "middle"
+    )
+
+    .text(
+        "PACIFIC"
+    );
+
+
+/* ==========================================================
+   LAYERS
+========================================================== */
+
+const mapLayer =
+    svg.append("g");
+
+
+const connectorLayer =
+    svg.append("g");
+
+
+const dataLayer =
+    svg.append("g");
+
+
+const locationLayer =
+    svg.append("g");
+
+
+const labelLayer =
+    svg.append("g");
+
+
+/* ==========================================================
+   WORLD MAP
+========================================================== */
+
+d3.json(
+    "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+)
+
+.then(
+    world => {
+
+
+        const countries =
+
+            topojson.feature(
+
+                world,
+
+                world.objects.countries
+
+            );
+
+
+        mapLayer
+
+            .selectAll(
+                ".land"
+            )
+
+            .data(
+                countries.features
+            )
+
+            .enter()
+
+            .append(
+                "path"
+            )
+
+            .attr(
+                "class",
+                "land"
+            )
+
+            .attr(
+                "d",
+                path
+            );
+
+    }
+);
+
+
+/* ==========================================================
+   PROJECT LOCATIONS
+========================================================== */
+
+territories.forEach(
+    d => {
+
+
+        const coords =
+
+            projection([
+                +d.Longitude,
+                +d.Latitude
+            ]);
+
+
+        /*
+        True geographic point
+        */
+
+        d.anchorX =
+            coords[0];
+
+
+        d.anchorY =
+            coords[1];
+
+
+        /*
+        Visual data circle
+
+        Most countries remain exactly on their geographic
+        position.
+
+        Dense clusters get very small offsets.
+        */
+
+        d.x =
+            d.anchorX
+            +
+            (+d.MarkerDx || 0);
+
+
+        d.y =
+            d.anchorY
+            +
+            (+d.MarkerDy || 0);
+
+    }
+);
+
+
+/* ==========================================================
+   CONNECTOR LINES
+========================================================== */
+
+connectorLayer
+
+    .selectAll(
+        ".location-line"
+    )
+
+    .data(
+        territories.filter(
+            d =>
+                Math.abs(+d.MarkerDx || 0) > 1
+                ||
+                Math.abs(+d.MarkerDy || 0) > 1
+        )
+    )
+
+    .enter()
+
+    .append(
+        "line"
+    )
+
+    .attr(
+        "class",
+        "location-line"
+    )
+
+    .attr(
+        "x1",
+        d =>
+            d.anchorX
+    )
+
+    .attr(
+        "y1",
+        d =>
+            d.anchorY
+    )
+
+    .attr(
+        "x2",
+        d =>
+            d.x
+    )
+
+    .attr(
+        "y2",
+        d =>
+            d.y
+    );
+
+
+/* ==========================================================
+   STATIC OUTER RING
+========================================================== */
+/*
+No pulse animation.
+
+The ring is only part of the visual language.
+*/
+
+const circleRings =
+
+    dataLayer
+
+        .selectAll(
+            ".data-circle-ring"
+        )
+
+        .data(
+            territories
+        )
+
+        .enter()
+
+        .append(
+            "circle"
+        )
+
+        .attr(
+            "class",
+            "data-circle-ring"
+        )
+
+        .attr(
+            "cx",
+            d =>
+                d.x
+        )
+
+        .attr(
+            "cy",
+            d =>
+                d.y
+        )
+
+        .attr(
+            "r",
+            29
+        );
+
+
+/* ==========================================================
+   LARGE DATA CIRCLE
+========================================================== */
+/*
+Radius always = 23.
+
+Only FILL COLOR changes.
+*/
+
+const dataCircles =
+
+    dataLayer
+
+        .selectAll(
+            ".data-circle"
+        )
+
+        .data(
+            territories
+        )
+
+        .enter()
+
+        .append(
+            "circle"
+        )
+
+        .attr(
+            "class",
+            "data-circle"
+        )
+
+        .attr(
+            "cx",
+            d =>
+                d.x
+        )
+
+        .attr(
+            "cy",
+            d =>
+                d.y
+        )
+
+        .attr(
+            "r",
+            23
+        );
+
+
+/* ==========================================================
+   HIGHLIGHT
+========================================================== */
+
+dataLayer
+
+    .selectAll(
+        ".circle-highlight"
+    )
+
+    .data(
+        territories
+    )
+
+    .enter()
+
+    .append(
+        "circle"
+    )
+
+    .attr(
+        "class",
+        "circle-highlight"
+    )
+
+    .attr(
+        "cx",
+        d =>
+            d.x - 7
+    )
+
+    .attr(
+        "cy",
+        d =>
+            d.y - 7
+    )
+
+    .attr(
+        "r",
+        5
+    );
+
+
+/* ==========================================================
+   TRUE LOCATION MARKER
+========================================================== */
+
+locationLayer
+
+    .selectAll(
+        ".location-dot-outer"
+    )
+
+    .data(
+        territories
+    )
+
+    .enter()
+
+    .append(
+        "circle"
+    )
+
+    .attr(
+        "class",
+        "location-dot-outer"
+    )
+
+    .attr(
+        "cx",
+        d =>
+            d.anchorX
+    )
+
+    .attr(
+        "cy",
+        d =>
+            d.anchorY
+    )
+
+    .attr(
+        "r",
+        5
+    );
+
+
+locationLayer
+
+    .selectAll(
+        ".location-dot"
+    )
+
+    .data(
+        territories
+    )
+
+    .enter()
+
+    .append(
+        "circle"
+    )
+
+    .attr(
+        "class",
+        "location-dot"
+    )
+
+    .attr(
+        "cx",
+        d =>
+            d.anchorX
+    )
+
+    .attr(
+        "cy",
+        d =>
+            d.anchorY
+    )
+
+    .attr(
+        "r",
+        2.4
+    );
+
+
+/* ==========================================================
+   COUNTRY + FLAG LABEL
+========================================================== */
+
+labelLayer
+
+    .selectAll(
+        ".country-label"
+    )
+
+    .data(
+        territories
+    )
+
+    .enter()
+
+    .append(
+        "text"
+    )
+
+    .attr(
+        "class",
+        "country-label"
+    )
+
+    .attr(
+        "x",
+        d =>
+            d.x
+            +
+            (+d.LabelDx || 29)
+    )
+
+    .attr(
+        "y",
+        d =>
+            d.y
+            +
+            (+d.LabelDy || 4)
+    )
+
+    .attr(
+        "text-anchor",
+        d =>
+            (+d.LabelDx || 29) < 0
+            ? "end"
+            : "start"
+    )
+
+    .text(
+        d =>
+            `${d.Flag} ${d.Country}`
+    );
+
+
+/* ==========================================================
+   STATE
+========================================================== */
+
+let currentIndicator =
+    "Surface Temperature anomalies";
+
+
+let availableYears =
+    [];
+
+
+let currentIndex =
+    0;
+
+
+let timer =
+    null;
+
+
+let isPlaying =
+    false;
+
+
+/* ==========================================================
+   CONTROLS
+========================================================== */
+
+const slider =
+    document.getElementById(
+        "year-slider"
+    );
+
+
+const playButton =
+    document.getElementById(
+        "play-button"
+    );
+
+
+const yearDisplay =
+    document.getElementById(
+        "year-display"
+    );
+
+
+const regionalYear =
+    document.getElementById(
+        "regional-year"
+    );
+
+
+const regionalValue =
+    document.getElementById(
+        "regional-value"
+    );
+
+
+const regionalIndicator =
+    document.getElementById(
+        "regional-indicator"
+    );
+
+
+const trendNote =
+    document.getElementById(
+        "trend-note"
+    );
+
+
+/* ==========================================================
+   COLOR SCALE
+========================================================== */
+
+function createColorScale(
+    indicator
+) {
+
+
+    const config =
+        indicatorConfig[
+            indicator
+        ];
+
+
+    /*
+    ----------------------------------------------------------
+    RED LIST = fixed 0 -> 1
+    ----------------------------------------------------------
+    */
+
+    if (
+        config.type ===
+        "sequential"
+    ) {
+
+
+        return d3
+
+            .scaleLinear()
+
+            .domain([
+                0,
+                0.5,
+                1
+            ])
+
+            .range([
+                config.low,
+                config.middle,
+                config.high
+            ])
+
+            .clamp(
+                true
+            );
+
+    }
+
+
+    /*
+    ----------------------------------------------------------
+    ANOMALY INDICATORS
+
+    Fixed domain across ALL years.
+    Zero always remains neutral.
+    ----------------------------------------------------------
+    */
+
+    const values =
+
+        environmentData
+
+            .filter(
+                d =>
+                    d.Indicator ===
+                    indicator
+            )
+
+            .map(
+                d =>
+                    +d.Value
+            )
+
+            .filter(
+                Number.isFinite
+            );
+
+
+    const minValue =
+
+        Math.min(
+            d3.min(values),
+            0
+        );
+
+
+    const maxValue =
+
+        Math.max(
+            d3.max(values),
+            0
+        );
+
+
+    return d3
+
+        .scaleLinear()
+
+        .domain([
+            minValue,
+            0,
+            maxValue
+        ])
+
+        .range([
+            config.low,
+            config.neutral,
+            config.high
+        ])
+
+        .clamp(
+            true
+        );
+
+}
+
+
+/* ==========================================================
+   FORMAT VALUES
+========================================================== */
+
+function formatValue(
+    indicator,
+    value
+) {
+
+
+    if (
+        value === undefined
+        ||
+        value === null
+        ||
+        Number.isNaN(+value)
+    ) {
+
+        return "—";
+
+    }
+
+
+    const config =
+        indicatorConfig[
+            indicator
+        ];
+
+
+    const number =
+        +value;
+
+
+    if (
+        indicator ===
+        "15.5.1 Red List Index"
+    ) {
+
+        return number.toFixed(
+            config.decimals
+        );
+
+    }
+
+
+    return (
+        number > 0
+        ? "+"
+        : ""
+    )
+    +
+    number.toFixed(
+        config.decimals
+    );
+
+}
+
+
+/* ==========================================================
+   LEGEND
+========================================================== */
+
+function updateLegend() {
+
+
+    const config =
+        indicatorConfig[
+            currentIndicator
+        ];
+
+
+    document
+        .getElementById(
+            "legend-title"
+        )
+        .textContent =
+        config.label;
+
+
+    /*
+    Red List
+    */
+
+    if (
+        config.type ===
+        "sequential"
+    ) {
+
+
+        document
+            .getElementById(
+                "legend-gradient"
+            )
+            .style.background =
+            `linear-gradient(
+                to right,
+                ${config.low},
+                ${config.middle},
+                ${config.high}
+            )`;
+
+
+        document
+            .getElementById(
+                "legend-min"
+            )
+            .textContent =
+            "0";
+
+
+        document
+            .getElementById(
+                "legend-mid"
+            )
+            .textContent =
+            "0.5";
+
+
+        document
+            .getElementById(
+                "legend-max"
+            )
+            .textContent =
+            "1";
+
+
+        return;
+
+    }
+
+
+    /*
+    Anomalies
+    */
+
+    const values =
+
+        environmentData
+
+            .filter(
+                d =>
+                    d.Indicator ===
+                    currentIndicator
+            )
+
+            .map(
+                d =>
+                    +d.Value
+            )
+
+            .filter(
+                Number.isFinite
+            );
+
+
+    const minValue =
+
+        Math.min(
+            d3.min(values),
+            0
+        );
+
+
+    const maxValue =
+
+        Math.max(
+            d3.max(values),
+            0
+        );
+
+
+    document
+        .getElementById(
+            "legend-gradient"
+        )
+        .style.background =
+        `linear-gradient(
+            to right,
+            ${config.low},
+            ${config.neutral},
+            ${config.high}
+        )`;
+
+
+    document
+        .getElementById(
+            "legend-min"
+        )
+        .textContent =
+        minValue.toFixed(2);
+
+
+    document
+        .getElementById(
+            "legend-mid"
+        )
+        .textContent =
+        "0";
+
+
+    document
+        .getElementById(
+            "legend-max"
+        )
+        .textContent =
+        maxValue.toFixed(2);
+
+}
+
+
+/* ==========================================================
+   UPDATE MAP
+========================================================== */
+
+function updateMap() {
+
+
+    const year =
+        availableYears[
+            currentIndex
+        ];
+
+
+    yearDisplay.textContent =
+        year;
+
+
+    slider.value =
+        currentIndex;
+
+
+    /*
+    Before 1980 the animation runs at 2× speed, so transitions
+    are also shorter. From 1980 onward the animation slows down
+    to make the sustained warming pattern easier to observe.
+    */
+
+    const transitionDuration =
+        +year < 1980
+        ? 80
+        : 180;
+
+
+    /*
+    Show the contextual callout during the 1980s, only for the
+    two temperature-anomaly indicators.
+    */
+
+    const isTemperatureIndicator =
+        currentIndicator === "Surface Temperature anomalies"
+        ||
+        currentIndicator === "Sea Surface Temperature anomalies";
+
+
+    const showTrendNote =
+        isTemperatureIndicator
+        &&
+        +year >= 1980
+        &&
+        +year <= 1989;
+
+
+    trendNote.classList.toggle(
+        "visible",
+        showTrendNote
+    );
+
+
+    /*
+    ----------------------------------------------------------
+    DATA FOR CURRENT YEAR
+    ----------------------------------------------------------
+    */
+
+    const currentData =
+
+        environmentData
+
+            .filter(
+                d =>
+                    d.Indicator ===
+                    currentIndicator
+
+                    &&
+
+                    +d.Year ===
+                    +year
+            );
+
+
+    const valueMap =
+
+        new Map(
+
+            currentData.map(
+                d => [
+                    d.Country,
+                    +d.Value
+                ]
+            )
+
+        );
+
+
+    const scale =
+        createColorScale(
+            currentIndicator
+        );
+
+
+    /*
+    ----------------------------------------------------------
+    UPDATE BIG DATA CIRCLES
+
+    IMPORTANT:
+    radius stays exactly 23.
+    ----------------------------------------------------------
+    */
+
+    dataCircles
+
+        .transition()
+
+        .duration(
+            350
+        )
+
+        .attr(
+            "fill",
+            d => {
+
+
+                const value =
+                    valueMap.get(
+                        d.Country
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return "#DCE9DD";
+
+                }
+
+
+                return scale(
+                    value
+                );
+
+            }
+        )
+
+        .attr(
+            "stroke",
+            d => {
+
+
+                const value =
+                    valueMap.get(
+                        d.Country
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return "#AFC3B1";
+
+                }
+
+
+                return d3
+                    .color(
+                        scale(value)
+                    )
+                    .darker(
+                        0.7
+                    );
+
+            }
+        );
+
+
+    /*
+    ----------------------------------------------------------
+    UPDATE OUTER STATIC RING COLOR
+    ----------------------------------------------------------
+    */
+
+    circleRings
+
+        .transition()
+
+        .duration(
+            transitionDuration
+        )
+
+        .attr(
+            "stroke",
+            d => {
+
+
+                const value =
+                    valueMap.get(
+                        d.Country
+                    );
+
+
+                if (
+                    value === undefined
+                ) {
+
+                    return "#BCCDBC";
+
+                }
+
+
+                return scale(
+                    value
+                );
+
+            }
+        );
+
+
+    /* ======================================================
+       REGIONAL AVERAGE
+    ====================================================== */
+
+
+    /*
+    Restrict average to countries represented
+    on this map.
+
+    This avoids accidentally including a country
+    that is in final_dataset but not displayed.
+    */
+
+    const displayedCountries =
+
+        new Set(
+
+            territories.map(
+                d =>
+                    d.Country
+            )
+
+        );
+
+
+    const regionalValues =
+
+        currentData
+
+            .filter(
+                d =>
+                    displayedCountries.has(
+                        d.Country
+                    )
+            )
+
+            .map(
+                d =>
+                    +d.Value
+            )
+
+            .filter(
+                Number.isFinite
+            );
+
+
+    const average =
+
+        regionalValues.length > 0
+
+        ? d3.mean(
+            regionalValues
+        )
+
+        : null;
+
+
+    regionalYear.textContent =
+        `Year ${year}`;
+
+
+    regionalValue.textContent =
+
+        average === null
+
+        ? "—"
+
+        : formatValue(
+            currentIndicator,
+            average
+        );
+
+
+    const currentConfig =
+        indicatorConfig[
+            currentIndicator
+        ];
+
+
+    regionalIndicator.textContent =
+        currentConfig.baseline
+        ? `${currentConfig.label} · ${currentConfig.baseline}`
+        : currentConfig.label;
+
+
+    /*
+    Optional:
+    tint regional average number using the same scale.
+    */
+
+    regionalValue.style.color =
+
+        average === null
+
+        ? "#1B5E20"
+
+        : d3
+            .color(
+                scale(average)
+            )
+            .darker(
+                0.65
+            );
+
+
+    updateLegend();
+
+}
+
+
+/* ==========================================================
+   LOAD INDICATOR
+========================================================== */
+
+function loadIndicator(
+    indicator
+) {
+
+
+    currentIndicator =
+        indicator;
+
+
+    trendNote.classList.remove(
+        "visible"
+    );
+
+
+    availableYears =
+
+        Array.from(
+
+            new Set(
+
+                environmentData
+
+                    .filter(
+                        d =>
+                            d.Indicator ===
+                            currentIndicator
+                    )
+
+                    .map(
+                        d =>
+                            +d.Year
+                    )
+
+            )
+
+        )
+
+        .sort(
+            (a,b) =>
+                a-b
+        );
+
+
+    currentIndex =
+        0;
+
+
+    slider.min =
+        0;
+
+
+    slider.max =
+        availableYears.length - 1;
+
+
+    slider.step =
+        1;
+
+
+    slider.value =
+        0;
+
+
+    document
+        .getElementById(
+            "year-min"
+        )
+        .textContent =
+        availableYears[0];
+
+
+    document
+        .getElementById(
+            "year-max"
+        )
+        .textContent =
+        availableYears[
+            availableYears.length - 1
+        ];
+
+
+    stopAnimation();
+
+
+    updateMap();
+
+}
+
+
+/* ==========================================================
+   PLAY
+========================================================== */
+
+function playAnimation() {
+
+
+    /*
+    Restart from beginning if user already reached end.
+    */
+
+    if (
+        currentIndex >=
+        availableYears.length - 1
+    ) {
+
+        currentIndex =
+            0;
+
+        updateMap();
+
+    }
+
+
+    isPlaying =
+        true;
+
+
+    playButton.textContent =
+        "❚❚";
+
+
+    scheduleNextFrame();
+
+}
+
+
+/* ==========================================================
+   VARIABLE PLAYBACK SPEED
+========================================================== */
+
+function scheduleNextFrame() {
+
+
+    if (
+        !isPlaying
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentIndex >=
+        availableYears.length - 1
+    ) {
+
+        stopAnimation();
+
+        return;
+
+    }
+
+
+    const nextYear =
+        availableYears[
+            currentIndex + 1
+        ];
+
+
+    /*
+    2× speed before 1980: 110 ms per year.
+    Normal speed from 1980 onward: 220 ms per year.
+    */
+
+    const delay =
+        +nextYear < 1980
+        ? 110
+        : 220;
+
+
+    timer =
+        setTimeout(
+
+            () => {
+
+
+                if (
+                    !isPlaying
+                ) {
+
+                    return;
+
+                }
+
+
+                currentIndex++;
+
+
+                updateMap();
+
+
+                scheduleNextFrame();
+
+
+            },
+
+            delay
+
+        );
+
+}
+
+
+/* ==========================================================
+   STOP
+========================================================== */
+
+function stopAnimation() {
+
+
+    if (
+        timer
+    ) {
+
+        clearTimeout(
+            timer
+        );
+
+
+        timer =
+            null;
+
+    }
+
+
+    isPlaying =
+        false;
+
+
+    playButton.textContent =
+        "▶";
+
+}
+
+
+/* ==========================================================
+   PLAY BUTTON
+========================================================== */
+
+playButton
+
+    .addEventListener(
+
+        "click",
+
+        () => {
+
+
+            if (
+                isPlaying
+            ) {
+
+                stopAnimation();
+
+            }
+
+            else {
+
+                playAnimation();
+
+            }
+
+        }
+
+    );
+
+
+/* ==========================================================
+   YEAR SLIDER
+========================================================== */
+
+slider
+
+    .addEventListener(
+
+        "input",
+
+        event => {
+
+
+            stopAnimation();
+
+
+            currentIndex =
+                +event.target.value;
+
+
+            updateMap();
+
+        }
+
+    );
+
+
+/* ==========================================================
+   INDICATOR BUTTONS
+========================================================== */
+
+document
+
+    .querySelectorAll(
+        ".indicator-button"
+    )
+
+    .forEach(
+
+        button => {
+
+
+            button
+
+                .addEventListener(
+
+                    "click",
+
+                    () => {
+
+
+                        document
+
+                            .querySelectorAll(
+                                ".indicator-button"
+                            )
+
+                            .forEach(
+                                x =>
+                                    x.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+
+                        button
+                            .classList
+                            .add(
+                                "active"
+                            );
+
+
+                        loadIndicator(
+                            button.dataset.indicator
+                        );
+
+                    }
+
+                );
+
+        }
+
+    );
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+loadIndicator(
+    currentIndicator
+);
+
+
+</script>
+
+
+</body>
+
+</html>
+
+')
+
+
+# ============================================================
+# 7. SAVE
+# ============================================================
+
+output_file <- file.path(
+  getwd(),
+  "pacific_environment_static_circles.html"
+)
+
+
+writeLines(
+  html,
+  output_file
+)
+
+
+cat(
+  "\nVisualization saved to:\n",
+  output_file,
+  "\n"
+)
+
+
+# ============================================================
+# 8. OPEN IN RSTUDIO
+# ============================================================
+
+if (
+  requireNamespace(
+    "rstudioapi",
+    quietly = TRUE
+  )
+) {
+  
+  rstudioapi::viewer(
+    output_file
+  )
+  
+} else {
+  
+  browseURL(
+    output_file
+  )
+}

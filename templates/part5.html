@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+<style>{{ inline_page_css | safe }}</style>
+{% endblock %}
+{% block head_scripts %}{% endblock %}
+{% block content %}
+<div class="part5-spread">
+  {% if part5_image %}
+  <img
+    class="part5-image"
+    src="{{ part5_image }}"
+    alt="Pacific tourism synthesis"
+  >
+  {% else %}
+  <div class="part5-placeholder">
+    <p>Add your final JPEG to <code>images/PART2/Part5_template/</code></p>
+    <p>Then run <code>python3 build.py</code></p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

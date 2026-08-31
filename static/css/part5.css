@@ -1,0 +1,44 @@
+.part5-spread {
+    width: 100%;
+    min-height: calc(100vh - 48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0 20px;
+}
+
+.part5-image {
+    width: 100%;
+    max-width: 1400px;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+    border: 1px solid #A5D6A7;
+    box-shadow: 0 18px 50px rgba(27, 94, 32, 0.12);
+    background: #F7FBF7;
+}
+
+.part5-placeholder {
+    width: 100%;
+    max-width: 720px;
+    padding: 48px 32px;
+    text-align: center;
+    border: 2px dashed #A5D6A7;
+    border-radius: 18px;
+    color: #527A57;
+    background: #EEF7EF;
+}
+
+.book-embed .part5-spread {
+    min-height: 100vh;
+    padding: 0;
+}
+
+.book-embed .part5-image {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    max-width: none;
+    min-height: 100vh;
+    object-fit: contain;
+}

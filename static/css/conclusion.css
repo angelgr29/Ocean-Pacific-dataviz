@@ -1,0 +1,94 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: #F8F4E8;
+    color: #1F4829;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.conclusion-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12vh 8vw 14vh;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 30% 20%, rgba(102, 187, 106, 0.07), transparent 42%),
+        #F8F4E8;
+}
+
+.conclusion-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(62, 72, 57, 0.035) 0.8px, transparent 0.8px);
+    background-size: 16px 16px;
+    pointer-events: none;
+}
+
+.conclusion-route {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.conclusion-route path {
+    fill: none;
+    stroke: rgba(75, 136, 86, 0.28);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 5 10;
+}
+
+.conclusion-statement {
+    position: relative;
+    z-index: 2;
+    max-width: 680px;
+    margin: 0 auto 0 4vw;
+}
+
+.conclusion-part {
+    margin: 0;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 1.15s ease, transform 1.15s ease;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(26px, 3.1vw, 38px);
+    line-height: 1.42;
+    letter-spacing: -0.3px;
+    color: #1B5E20;
+    font-weight: 500;
+}
+
+.conclusion-part + .conclusion-part {
+    margin-top: 1.35em;
+}
+
+.conclusion-part.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.conclusion-part em {
+    font-style: normal;
+    font-weight: 650;
+    color: #163D22;
+}
+
+@media (max-width: 760px) {
+    .conclusion-statement {
+        margin: 0;
+        max-width: 92vw;
+    }
+
+    .conclusion-part {
+        font-size: clamp(22px, 6vw, 30px);
+        line-height: 1.45;
+    }
+}

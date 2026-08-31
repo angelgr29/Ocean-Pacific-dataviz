@@ -1,0 +1,10 @@
+{% macro story_nav(pages, active_slug) %}
+<nav class="story-nav" aria-label="Study chapters">
+  {% for page in pages %}
+  <a href="{{ page.output }}"
+     class="{{ 'active' if page.slug == active_slug else '' }}{% if page.status == 'placeholder' %} placeholder{% endif %}">
+    {{ page.chapter }}
+  </a>
+  {% endfor %}
+</nav>
+{% endmacro %}

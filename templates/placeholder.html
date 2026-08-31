@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block content %}
+<div class="header">
+  <div class="title-area">
+    <div class="eyebrow">{{ chapter }}</div>
+    <h1>{{ headline }}</h1>
+    <div class="subtitle">
+      This chapter is reserved for the next phase of your study. The navigation above links to all
+      six planned pages so you can build the full narrative arc as you go.
+    </div>
+  </div>
+</div>
+
+<div class="intro-box" style="width:100%;max-width:720px;">
+  <div class="intro-tag">Suggested focus</div>
+  {% if active_slug == 'vulnerability' %}
+  <div class="intro-title">Combine tourism dependence with environmental stress.</div>
+  <div class="intro-text">
+    Cross Chapter 1 (% tourism GDP) with Chapter 3 indicators to show which destinations face the
+    highest combined economic and ecological risk.
+  </div>
+  {% else %}
+  <div class="intro-title">Sources, methods, and next steps.</div>
+  <div class="intro-text">
+    Document data sources (World Travel, UN Tourism, climate/biodiversity datasets), methodology,
+    and key takeaways for policy and tourism resilience in the Pacific.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

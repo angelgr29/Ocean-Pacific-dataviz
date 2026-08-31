@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+{% if inline_page_css is defined %}
+<style>{{ inline_page_css | safe }}</style>
+{% else %}
+<link rel="stylesheet" href="static/css/environment.css">
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="page-header">
+<div class="header">
+  <div>
+    <div class="eyebrow">Pacific Environment · Chapter 3</div>
+    <h1>Paradise under pressure</h1>
+  </div>
+  <div id="year-display" class="year-display"></div>
+</div>
+</div>
+
+<div class="controls">
+  <button class="indicator-button active" data-indicator="Surface Temperature anomalies">Land temperature</button>
+  <button class="indicator-button" data-indicator="Sea Surface Temperature anomalies">Ocean temperature</button>
+  <button class="indicator-button" data-indicator="15.5.1 Red List Index">Biodiversity</button>
+</div>
+
+<div id="climate-view" class="environment-view">
+  <div class="map-wrapper">
+    <svg id="pacific-map"></svg>
+
+    <div class="regional-box">
+      <div class="regional-tag">Pacific territories mean</div>
+      <div id="regional-year" class="regional-year"></div>
+      <div id="regional-value" class="regional-value"></div>
+      <div id="regional-indicator" class="regional-indicator"></div>
+    </div>
+
+    <div class="legend">
+      <div id="legend-title" class="legend-title"></div>
+      <div id="legend-gradient" class="legend-gradient"></div>
+      <div class="legend-values">
+        <span id="legend-min"></span>
+        <span id="legend-mid"></span>
+        <span id="legend-max"></span>
+      </div>
+    </div>
+
+    <div class="timeline-panel">
+      <div class="timeline-row">
+        <button id="play-button">▶</button>
+        <input id="year-slider" type="range">
+      </div>
+      <div class="timeline-years">
+        <span id="year-min"></span>
+        <span id="year-max"></span>
+      </div>
+    </div>
+
+    <div id="story-dim" class="story-dim" aria-hidden="true"></div>
+
+    <article id="story-moment" class="story-moment" aria-hidden="true">
+      <div class="story-moment-inner">
+        <div class="story-moment-eyebrow"></div>
+        <h2 class="story-moment-headline"></h2>
+        <p class="story-moment-body"></p>
+        <div class="story-moment-period"></div>
+      </div>
+    </article>
+
+    <svg id="story-connector" class="story-connector" aria-hidden="true">
+      <line></line>
+      <circle r="3.5"></circle>
+    </svg>
+
+    <div class="note">
+      The small marker shows the approximate geographic location. Circle color represents the
+      indicator value for each territory. Temperature anomalies are shown in
+      °C relative to the 1971–2000 climatological baseline.
+    </div>
+  </div>
+</div>
+
+<div id="biodiversity-view" class="environment-view is-hidden" aria-hidden="true">
+  <div class="biodiversity-panel">
+    <div class="rli-plotly-wrap">
+      {{ rli_chart_html | safe }}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+window.PACIFIC_DATA = {
+  environment: {{ environment_json | safe }},
+  territories: {{ territories_json | safe }},
+  indicatorConfig: {{ indicator_config_json | safe }}
+};
+</script>
+{% if inline_page_js is defined %}
+<script>{{ inline_page_js | safe }}</script>
+{% else %}
+<script src="static/js/pacific-map.js"></script>
+<script src="static/js/environment-story.js"></script>
+<script src="static/js/environment.js"></script>
+{% endif %}
+{% endblock %}

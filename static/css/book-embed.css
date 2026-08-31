@@ -1,0 +1,93 @@
+/* Hide chapter chrome when loaded inside the storybook iframe */
+html.book-embed .story-nav,
+html.book-embed .page-header,
+html.book-embed .footer {
+    display: none !important;
+}
+
+html.book-embed,
+html.book-embed body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+html.book-embed .page {
+    margin: 0;
+    padding: 12px 16px 20px;
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+html.book-embed .map-wrapper {
+    width: 100%;
+    border-radius: 18px;
+}
+
+html.book-embed .biodiversity-panel {
+    border-radius: 18px;
+}
+
+html.book-embed #pacific-map {
+    width: 100%;
+}
+
+html.book-embed .controls {
+    padding: 0 4px;
+}
+
+html.book-embed.checkpoint-page,
+html.book-embed.checkpoint-page body {
+    padding: 0;
+    margin: 0;
+    background: #F8F4E8;
+    overflow: hidden;
+}
+
+html.book-embed.checkpoint-page .page {
+    padding: 0;
+    max-width: none;
+    min-height: 100vh;
+}
+
+html.book-embed.checkpoint-page .journal {
+    margin-top: 0;
+    border-radius: 0;
+    border: none;
+    height: 100vh;
+}
+
+html.book-embed .part5-spread {
+    min-height: 100vh;
+    padding: 0;
+}
+
+html.book-embed .part5-image {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    object-fit: contain;
+}
+
+html.book-embed body.conclusion-page,
+html.book-embed body.resources-page {
+    padding: 0;
+    margin: 0;
+    background: #F8F4E8;
+    overflow: hidden;
+}
+
+html.book-embed body.conclusion-page .page,
+html.book-embed body.resources-page .page {
+    padding: 0;
+    max-width: none;
+    min-height: 100vh;
+}

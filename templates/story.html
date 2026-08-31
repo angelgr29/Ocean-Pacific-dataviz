@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pacific Tourism · Storybook</title>
+  <style>{{ book_css | safe }}</style>
+</head>
+<body>
+  <div id="pacific-book" class="pacific-book">
+
+    <div class="book-stage" id="book-stage">
+      <div class="book-cover-spread" id="book-cover"></div>
+      <iframe
+        class="book-iframe"
+        id="book-iframe"
+        title="Chapter content"
+      ></iframe>
+    </div>
+
+    <!-- Page-turn peel overlay -->
+    <div class="page-peel" id="page-peel" aria-hidden="true">
+      <div class="page-peel-shadow"></div>
+      <div class="page-peel-sheet"></div>
+    </div>
+
+    <!-- Chapter splash (large centered presentation) -->
+    <div class="chapter-splash" id="chapter-splash" aria-hidden="true">
+      <div class="splash-grain"></div>
+      <div class="splash-ring splash-ring-1"></div>
+      <div class="splash-ring splash-ring-2"></div>
+      <div class="splash-content">
+        <div class="splash-eyebrow" id="splash-eyebrow"></div>
+        <h1 class="splash-title" id="splash-title"></h1>
+        <p class="splash-subtitle" id="splash-subtitle"></p>
+      </div>
+    </div>
+
+    <!-- Folded corner — click to turn page -->
+    <button class="page-corner page-corner-next" id="corner-next" type="button" aria-label="Next page">
+      <span class="corner-fold"></span>
+      <span class="corner-label">Turn page</span>
+    </button>
+
+    <button class="page-corner page-corner-prev" id="corner-prev" type="button" aria-label="Previous page" hidden>
+      <span class="corner-fold corner-fold-prev"></span>
+      <span class="corner-label">Back</span>
+    </button>
+
+    <div class="book-progress" id="book-progress"></div>
+  </div>
+
+  <script>
+    window.PACIFIC_BOOK = {{ book_chapters_json | safe }};
+  </script>
+  <script>{{ book_js | safe }}</script>
+</body>
+</html>

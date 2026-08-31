@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+{% if inline_page_css is defined %}
+<style>{{ inline_page_css | safe }}</style>
+{% else %}
+<link rel="stylesheet" href="static/css/conclusion.css">
+{% endif %}
+{% endblock %}
+{% block head_scripts %}{% endblock %}
+{% block content %}
+<div class="conclusion-page">
+  <svg class="conclusion-route" viewBox="0 0 1200 780" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M 1180 620 C 980 590, 820 480, 640 410 S 380 340, 280 360"></path>
+  </svg>
+
+  <div class="conclusion-statement">
+    <p class="conclusion-part" id="conclusion-part-1">
+      Addressing climate change is <em>not only an environmental priority</em>.
+    </p>
+    <p class="conclusion-part" id="conclusion-part-2">
+      It is fundamental to safeguarding the ecosystems, livelihoods and economic activities that support
+      <em>long-term well-being</em> across Pacific Island countries.
+    </p>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% if inline_page_js is defined %}
+<script>{{ inline_page_js | safe }}</script>
+{% else %}
+<script src="static/js/conclusion.js"></script>
+{% endif %}
+{% endblock %}

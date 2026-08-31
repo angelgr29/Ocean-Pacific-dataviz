@@ -1,0 +1,2217 @@
+# ============================================================
+# PACIFIC TOURISM DEPENDENCE
+# PART 1 — ECONOMY
+#
+# Interactive D3 Pacific Map
+# Tourism Bubble Map + Geographic Aura
+# RStudio / R -> HTML
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 0. PACKAGES
+# ------------------------------------------------------------
+
+# Install once if needed:
+# install.packages(c("jsonlite", "rstudioapi"))
+
+library(jsonlite)
+
+
+# ============================================================
+# 1. TOURISM DATA
+# ============================================================
+
+df <- data.frame(
+  
+  Source = c(
+    "World Travel",
+    "World Travel",
+    "World Travel",
+    "World Travel",
+    "World Travel",
+    "UN Tourism",
+    "UN Tourism",
+    "UN Tourism",
+    "UN Tourism",
+    "UN Tourism"
+  ),
+  
+  Country = c(
+    "Fiji",
+    "Kiribati",
+    "Solomon Islands",
+    "Tonga",
+    "Vanuatu",
+    "French Polynesia",
+    "Guam",
+    "Marshall Islands",
+    "Palau",
+    "Samoa"
+  ),
+  
+  Value = c(
+    32.04,
+    12.27,
+    7.48,
+    12.45,
+    27.58,
+    7.30,
+    22.00,
+    2.50,
+    18.1375,
+    4.80039
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+
+# ============================================================
+# 2. GEOGRAPHIC COORDINATES + FLAGS
+# ============================================================
+
+country_info <- data.frame(
+  
+  Country = c(
+    "Fiji",
+    "Kiribati",
+    "Solomon Islands",
+    "Tonga",
+    "Vanuatu",
+    "French Polynesia",
+    "Guam",
+    "Marshall Islands",
+    "Palau",
+    "Samoa"
+  ),
+  
+  Longitude = c(
+    178.0650,     # Fiji
+    -157.3630,    # Kiribati
+    160.1562,     # Solomon Islands
+    -175.1982,    # Tonga
+    167.9596,     # Vanuatu
+    -149.4068,    # French Polynesia
+    144.7937,     # Guam
+    171.1845,     # Marshall Islands
+    134.5825,     # Palau
+    -172.1046     # Samoa
+  ),
+  
+  Latitude = c(
+    -17.7134,
+    1.8709,
+    -9.6457,
+    -21.1790,
+    -15.3767,
+    -17.6797,
+    13.4443,
+    7.1315,
+    7.5150,
+    -13.7590
+  ),
+  
+  Flag = c(
+    "🇫🇯",
+    "🇰🇮",
+    "🇸🇧",
+    "🇹🇴",
+    "🇻🇺",
+    "🇵🇫",
+    "🇬🇺",
+    "🇲🇭",
+    "🇵🇼",
+    "🇼🇸"
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+
+df <- merge(
+  df,
+  country_info,
+  by = "Country",
+  all.x = TRUE
+)
+
+
+# ============================================================
+# 3. LABEL OFFSETS
+# ============================================================
+#
+# These control where the labels appear relative
+# to each bubble.
+# Adjust these later if needed after seeing the final map.
+#
+
+label_offsets <- data.frame(
+  
+  Country = c(
+    "Fiji",
+    "Kiribati",
+    "Solomon Islands",
+    "Tonga",
+    "Vanuatu",
+    "French Polynesia",
+    "Guam",
+    "Marshall Islands",
+    "Palau",
+    "Samoa"
+  ),
+  
+  dx = c(
+    46,     # Fiji
+    40,     # Kiribati
+    43,     # Solomon Islands
+    39,     # Tonga
+    -46,    # Vanuatu
+    42,     # French Polynesia
+    39,     # Guam
+    42,     # Marshall Islands
+    -40,    # Palau
+    42      # Samoa
+  ),
+  
+  dy = c(
+    -26,
+    -26,
+    -26,
+    -23,
+    34,
+    33,
+    -25,
+    -25,
+    28,
+    31
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+
+df <- merge(
+  df,
+  label_offsets,
+  by = "Country",
+  all.x = TRUE
+)
+
+
+# ============================================================
+# 4. CONVERT TO JSON
+# ============================================================
+
+tourism_json <- toJSON(
+  df,
+  dataframe = "rows",
+  auto_unbox = TRUE,
+  pretty = FALSE
+)
+
+
+# ============================================================
+# 5. HTML
+# ============================================================
+
+html <- paste0('
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>Pacific Tourism Dependence</title>
+
+<!-- D3 -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<!-- TopoJSON -->
+<script src="https://unpkg.com/topojson-client@3"></script>
+
+
+<style>
+
+
+/* ==========================================================
+   GLOBAL DESIGN
+========================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    background: #F7FBF7;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color: #1B5E20;
+}
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.page {
+
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding:
+        30px 36px 38px 36px;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 40px;
+
+    margin-bottom: 20px;
+}
+
+
+.title-area {
+
+    max-width: 720px;
+}
+
+
+.eyebrow {
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 2.5px;
+
+    text-transform: uppercase;
+
+    color: #66BB6A;
+
+    margin-bottom: 9px;
+}
+
+
+h1 {
+
+    margin: 0;
+
+    font-size: 46px;
+
+    letter-spacing: -1.8px;
+
+    line-height: 1;
+
+    color: #1B5E20;
+}
+
+
+.subtitle {
+
+    margin-top: 14px;
+
+    color: #527A57;
+
+    font-size: 15px;
+
+    line-height: 1.55;
+
+    max-width: 660px;
+}
+
+
+/* ==========================================================
+   MAP CONTAINER
+========================================================== */
+
+.map-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius: 22px;
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            #EAF6EB 0%,
+
+            #F7FBF7 53%,
+
+            #EDF7EE 100%
+
+        );
+}
+
+
+#pacific-map {
+
+    display: block;
+
+    width: 100%;
+
+    height: 700px;
+}
+
+
+/* ==========================================================
+   BASEMAP
+========================================================== */
+
+.sphere {
+
+    fill: #EDF7EE;
+}
+
+
+.graticule {
+
+    fill: none;
+
+    stroke: #A5D6A7;
+
+    stroke-width: 0.65;
+
+    stroke-opacity: 0.30;
+}
+
+
+.land {
+
+    fill: #B7DCB9;
+
+    stroke: #FFFFFF;
+
+    stroke-width: 0.7;
+}
+
+
+.coast-glow {
+
+    fill: none;
+
+    stroke: #66BB6A;
+
+    stroke-opacity: 0.10;
+
+    stroke-width: 4;
+}
+
+
+/* ==========================================================
+   GEOGRAPHIC AURA
+========================================================== */
+
+.aura-outer {
+
+    fill: #66BB6A;
+
+    fill-opacity: 0.025;
+
+    stroke: #66BB6A;
+
+    stroke-opacity: 0.045;
+
+    stroke-width: 1;
+
+    pointer-events: none;
+}
+
+
+.aura-middle {
+
+    fill: #66BB6A;
+
+    fill-opacity: 0.045;
+
+    stroke: #66BB6A;
+
+    stroke-opacity: 0.065;
+
+    stroke-width: 1;
+
+    pointer-events: none;
+}
+
+
+.aura-inner {
+
+    fill: #66BB6A;
+
+    fill-opacity: 0.075;
+
+    stroke: #66BB6A;
+
+    stroke-opacity: 0.10;
+
+    stroke-width: 1;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   TOURISM BUBBLES
+========================================================== */
+
+.bubble {
+
+    cursor: pointer;
+}
+
+
+.bubble-world {
+
+    fill: #66BB6A;
+
+    stroke: #1B5E20;
+
+    stroke-width: 2;
+}
+
+
+.bubble-un {
+
+    fill: #66BB6A;
+
+    stroke: #1B5E20;
+
+    stroke-width: 2;
+}
+
+
+.inner-bubble {
+
+    fill: #F0F8F1;
+
+    opacity: 0.38;
+
+    pointer-events: none;
+}
+
+
+.pulse-ring {
+
+    fill: none;
+
+    stroke: #1B5E20;
+
+    stroke-width: 1.25;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   LABELS
+========================================================== */
+
+.country-label {
+
+    fill: #1B5E20;
+
+    font-weight: 750;
+
+    font-size: 12px;
+
+    paint-order: stroke;
+
+    stroke: #EDF7EE;
+
+    stroke-width: 4px;
+
+    stroke-linejoin: round;
+}
+
+
+.value-label {
+
+    fill: #66BB6A;
+
+    font-weight: 800;
+
+    font-size: 12px;
+
+    paint-order: stroke;
+
+    stroke: #EDF7EE;
+
+    stroke-width: 4px;
+}
+
+
+.leader-line {
+
+    stroke: #1B5E20;
+
+    stroke-width: 0.9;
+
+    stroke-opacity: 0.28;
+
+    stroke-dasharray: 2 3;
+}
+
+
+/* ==========================================================
+   PACIFIC TITLE
+========================================================== */
+
+.ocean-title {
+
+    fill: #1B5E20;
+
+    opacity: 0.045;
+
+    font-weight: 800;
+
+    letter-spacing: 13px;
+
+    font-size: 43px;
+}
+
+
+/* ==========================================================
+   TOOLTIP
+========================================================== */
+
+#tooltip {
+
+    position: absolute;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    background: #1B5E20;
+
+    color: #E8F5E9;
+
+    border-radius: 12px;
+
+    padding: 12px 15px;
+
+    min-width: 190px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(27,94,32,0.18);
+
+    z-index: 50;
+}
+
+
+.tooltip-country {
+
+    font-size: 16px;
+
+    font-weight: 750;
+
+    margin-bottom: 7px;
+}
+
+
+.tooltip-stat {
+
+    font-size: 13px;
+}
+
+
+.tooltip-value {
+
+    color: #B8E2BA;
+
+    font-weight: 800;
+}
+
+
+.tooltip-source {
+
+    margin-top: 7px;
+
+    padding-top: 7px;
+
+    border-top:
+
+        1px solid
+        rgba(232,245,233,0.22);
+
+    font-size: 11px;
+
+    opacity: 0.80;
+}
+
+
+/* ==========================================================
+   TOURISM VALUE LEGEND
+========================================================== */
+
+.size-legend {
+
+    position: absolute;
+
+    left: 22px;
+
+    bottom: 22px;
+
+    background:
+        rgba(240,248,241,0.94);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius: 15px;
+
+    padding: 13px 16px;
+
+    z-index: 20;
+}
+
+
+.legend-title {
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.5px;
+
+    font-weight: 800;
+
+    color: #1B5E20;
+
+    margin-bottom: 10px;
+}
+
+
+.legend-bubbles {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 14px;
+}
+
+
+.legend-item {
+
+    text-align: center;
+
+    font-size: 10px;
+
+    color: #527A57;
+}
+
+
+.legend-circle {
+
+    margin:
+        0 auto 5px auto;
+
+    border:
+        1.5px solid #1B5E20;
+
+    border-radius: 50%;
+
+    background:
+        rgba(102,187,106,0.32);
+}
+
+
+/* ==========================================================
+   STORY BOX
+========================================================== */
+
+.story-box {
+
+    position: absolute;
+
+    right: 22px;
+
+    bottom: 22px;
+
+    width: 300px;
+
+    background:
+        rgba(240,248,241,0.94);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius: 15px;
+
+    padding: 14px 16px;
+
+    z-index: 20;
+}
+
+
+.story-heading {
+
+    color: #1B5E20;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+
+.story-text {
+
+    margin-top: 6px;
+
+    color: #527A57;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.footer {
+
+    margin-top: 12px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    color: #709075;
+
+    font-size: 10px;
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+<!-- ========================================================
+     HEADER
+======================================================== -->
+
+<div class="header">
+
+
+    <div class="title-area">
+
+        <div class="eyebrow">
+
+            Pacific Tourism · Chapter 1
+
+        </div>
+
+
+        <h1>
+
+            Tourism is a lifeline.
+
+        </h1>
+
+
+        <div class="subtitle">
+
+            Tourism represents an important share of economic
+            activity across several Pacific Island economies,
+            although the level of dependence differs substantially
+            from one destination to another.
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ========================================================
+     MAP
+======================================================== -->
+
+<div class="map-wrapper">
+
+
+    <svg id="pacific-map"></svg>
+
+
+    <div id="tooltip"></div>
+
+
+
+    <!-- TOURISM SIZE LEGEND -->
+
+    <div class="size-legend">
+
+
+        <div class="legend-title">
+
+            Tourism contribution
+
+        </div>
+
+
+        <div class="legend-bubbles">
+
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-circle"
+                    style="
+                        width:14px;
+                        height:14px;
+                    ">
+                </div>
+
+                5%
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-circle"
+                    style="
+                        width:24px;
+                        height:24px;
+                    ">
+                </div>
+
+                15%
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div
+                    class="legend-circle"
+                    style="
+                        width:35px;
+                        height:35px;
+                    ">
+                </div>
+
+                30%
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- STORY BOX -->
+
+    <div class="story-box">
+
+
+        <div class="story-heading">
+
+            Tourism is an economic pillar
+
+        </div>
+
+
+        <div class="story-text">
+
+            Across many Pacific Island economies, tourism represents a 
+            substantial share of economic activity.
+            This dependence makes the sector central to income, 
+            employment and economic growth.
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ========================================================
+     FOOTER
+======================================================== -->
+
+<div class="footer">
+
+
+    <div>
+
+        Bubble area represents tourism contribution.
+
+    </div>
+
+
+    <div>
+
+        Sources: World Travel / UN Tourism ·
+        Basemap: World Atlas · D3.js
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ==========================================================
+   DATA
+========================================================== */
+
+const tourism = ',
+tourism_json,
+';
+
+
+
+/* ==========================================================
+   SVG SETUP
+========================================================== */
+
+const svg =
+    d3.select("#pacific-map");
+
+
+const wrapper =
+    document.querySelector(".map-wrapper");
+
+
+const tooltip =
+    d3.select("#tooltip");
+
+
+const width =
+    wrapper.clientWidth;
+
+
+const height =
+    700;
+
+
+svg
+
+    .attr(
+        "viewBox",
+        `0 0 ${width} ${height}`
+    )
+
+    .attr(
+        "preserveAspectRatio",
+        "xMidYMid meet"
+    );
+
+
+
+/* ==========================================================
+   PACIFIC-CENTERED PROJECTION
+========================================================== */
+
+const projection =
+
+    d3.geoNaturalEarth1()
+
+
+        /* Put Pacific in the center */
+
+        .rotate([
+            -170,
+            0
+        ])
+
+
+        /* Move focal point slightly south */
+
+        .center([
+            0,
+            -5
+        ])
+
+
+        /* ==================================================
+           ZOOM
+
+           Original version = 0.255
+
+           Current version = 0.32
+
+           Increase to 0.34 if you want even more zoom.
+        ================================================== */
+
+        .scale(
+            width * 0.45
+        )
+
+
+        .translate([
+            width / 2,
+            height / 2 + 25
+        ]);
+
+
+
+const path =
+    d3.geoPath(
+        projection
+    );
+
+
+
+/* ==========================================================
+   SPHERE / OCEAN
+========================================================== */
+
+svg
+
+    .append("path")
+
+    .datum({
+        type: "Sphere"
+    })
+
+    .attr(
+        "class",
+        "sphere"
+    )
+
+    .attr(
+        "d",
+        path
+    );
+
+
+
+/* ==========================================================
+   GRATICULE
+========================================================== */
+
+svg
+
+    .append("path")
+
+    .datum(
+        d3.geoGraticule10()
+    )
+
+    .attr(
+        "class",
+        "graticule"
+    )
+
+    .attr(
+        "d",
+        path
+    );
+
+
+
+/* ==========================================================
+   PACIFIC TEXT
+========================================================== */
+
+svg
+
+    .append("text")
+
+    .attr(
+        "class",
+        "ocean-title"
+    )
+
+    .attr(
+        "x",
+        width / 2
+    )
+
+    .attr(
+        "y",
+        height / 2 + 15
+    )
+
+    .attr(
+        "text-anchor",
+        "middle"
+    )
+
+    .text(
+        "PACIFIC"
+    );
+
+
+
+/* ==========================================================
+   MAP LAYERS
+
+   Layer order matters:
+
+   labels
+   ↑
+   tourism bubbles
+   ↑
+   geographic aura
+   ↑
+   basemap
+
+========================================================== */
+
+const mapLayer =
+    svg.append("g");
+
+
+const auraLayer =
+    svg.append("g");
+
+
+const bubbleLayer =
+    svg.append("g");
+
+
+const labelLayer =
+    svg.append("g");
+
+
+
+/* ==========================================================
+   TOURISM BUBBLE SCALE
+========================================================== */
+
+const radius =
+
+    d3.scaleSqrt()
+
+        .domain([
+
+            0,
+
+            d3.max(
+                tourism,
+                d => +d.Value
+            )
+
+        ])
+
+        .range([
+            5,
+            44
+        ]);
+
+
+
+/* ==========================================================
+   LOAD WORLD MAP
+========================================================== */
+
+d3.json(
+
+    "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+
+)
+
+.then(
+
+    world => {
+
+
+        const countries =
+
+            topojson.feature(
+
+                world,
+
+                world.objects.countries
+
+            );
+
+
+
+        /* --------------------------------------------------
+           COASTLINE GLOW
+        -------------------------------------------------- */
+
+        mapLayer
+
+            .append("path")
+
+            .datum(
+                countries
+            )
+
+            .attr(
+                "class",
+                "coast-glow"
+            )
+
+            .attr(
+                "d",
+                path
+            );
+
+
+
+        /* --------------------------------------------------
+           LAND
+        -------------------------------------------------- */
+
+        mapLayer
+
+            .selectAll(".land")
+
+            .data(
+                countries.features
+            )
+
+            .enter()
+
+            .append("path")
+
+            .attr(
+                "class",
+                "land"
+            )
+
+            .attr(
+                "d",
+                path
+            );
+
+
+
+        drawTourism();
+
+    }
+
+)
+
+.catch(
+
+    error => {
+
+
+        console.error(
+
+            "World map failed to load:",
+
+            error
+
+        );
+
+
+        drawTourism();
+
+    }
+
+);
+
+
+
+/* ==========================================================
+   DRAW TOURISM DATA
+========================================================== */
+
+function drawTourism() {
+
+
+
+    /* ======================================================
+       PROJECT COUNTRY COORDINATES
+    ====================================================== */
+
+    tourism.forEach(
+
+        d => {
+
+
+            const coords =
+
+                projection([
+
+                    +d.Longitude,
+
+                    +d.Latitude
+
+                ]);
+
+
+            d.x =
+                coords[0];
+
+
+            d.y =
+                coords[1];
+
+        }
+
+    );
+
+
+
+    /* ======================================================
+       GEOGRAPHIC AURA
+    ======================================================
+
+       IMPORTANT:
+
+       The aura does NOT represent tourism magnitude.
+
+       Tourism magnitude = bubble size.
+
+       Aura simply emphasizes the geographic location and
+       creates the visual language that will later be reused
+       for climate variables.
+
+    ====================================================== */
+
+
+    const auraOuter =
+        62;
+
+
+    const auraMiddle =
+        45;
+
+
+    const auraInner =
+        30;
+
+
+
+    /* ------------------------------------------------------
+       OUTER AURA
+    ------------------------------------------------------ */
+
+    auraLayer
+
+        .selectAll(".aura-outer")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("circle")
+
+        .attr(
+            "class",
+            "aura-outer"
+        )
+
+        .attr(
+            "cx",
+            d => d.x
+        )
+
+        .attr(
+            "cy",
+            d => d.y
+        )
+
+        .attr(
+            "r",
+            auraOuter
+        );
+
+
+
+    /* ------------------------------------------------------
+       MIDDLE AURA
+    ------------------------------------------------------ */
+
+    auraLayer
+
+        .selectAll(".aura-middle")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("circle")
+
+        .attr(
+            "class",
+            "aura-middle"
+        )
+
+        .attr(
+            "cx",
+            d => d.x
+        )
+
+        .attr(
+            "cy",
+            d => d.y
+        )
+
+        .attr(
+            "r",
+            auraMiddle
+        );
+
+
+
+    /* ------------------------------------------------------
+       INNER AURA
+    ------------------------------------------------------ */
+
+    auraLayer
+
+        .selectAll(".aura-inner")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("circle")
+
+        .attr(
+            "class",
+            "aura-inner"
+        )
+
+        .attr(
+            "cx",
+            d => d.x
+        )
+
+        .attr(
+            "cy",
+            d => d.y
+        )
+
+        .attr(
+            "r",
+            auraInner
+        );
+
+
+
+    /* ======================================================
+       PULSE RINGS
+
+       Only large tourism-dependent economies.
+    ====================================================== */
+
+    const pulseData =
+
+        tourism.filter(
+
+            d =>
+                +d.Value >= 18
+
+        );
+
+
+
+    const pulse =
+
+        bubbleLayer
+
+            .selectAll(".pulse-ring")
+
+            .data(
+                pulseData
+            )
+
+            .enter()
+
+            .append("circle")
+
+            .attr(
+                "class",
+                "pulse-ring"
+            )
+
+            .attr(
+                "cx",
+                d => d.x
+            )
+
+            .attr(
+                "cy",
+                d => d.y
+            )
+
+            .attr(
+                "r",
+                d =>
+                    radius(+d.Value)
+            );
+
+
+
+    function animatePulse() {
+
+
+        pulse
+
+            .attr(
+                "r",
+                d =>
+                    radius(+d.Value)
+            )
+
+            .attr(
+                "opacity",
+                0.38
+            )
+
+            .transition()
+
+            .duration(
+                2500
+            )
+
+            .ease(
+                d3.easeCubicOut
+            )
+
+            .attr(
+                "r",
+                d =>
+                    radius(+d.Value)
+                    +
+                    18
+            )
+
+            .attr(
+                "opacity",
+                0
+            )
+
+            .on(
+                "end",
+                animatePulse
+            );
+
+    }
+
+
+    animatePulse();
+
+
+
+    /* ======================================================
+       MAIN TOURISM BUBBLES
+    ====================================================== */
+
+    const bubbles =
+
+        bubbleLayer
+
+            .selectAll(".bubble")
+
+            .data(
+                tourism
+            )
+
+            .enter()
+
+            .append("circle")
+
+            .attr(
+                "class",
+                "bubble bubble-world"
+            )
+
+            .attr(
+                "cx",
+                d => d.x
+            )
+
+            .attr(
+                "cy",
+                d => d.y
+            )
+
+            .attr(
+                "r",
+                d =>
+                    radius(+d.Value)
+            )
+
+            .attr(
+                "fill-opacity",
+                0.82
+            )
+
+
+
+            /* ----------------------------------------------
+               HOVER
+            ---------------------------------------------- */
+
+            .on(
+
+                "mouseenter",
+
+                function(event, d) {
+
+
+                    d3.select(this)
+
+                        .transition()
+
+                        .duration(
+                            160
+                        )
+
+                        .attr(
+                            "r",
+                            radius(+d.Value)
+                            *
+                            1.12
+                        );
+
+
+
+                    tooltip
+
+                        .style(
+                            "opacity",
+                            1
+                        )
+
+                        .html(
+                            `
+
+                            <div class="tooltip-country">
+
+                                ${d.Flag} ${d.Country}
+
+                            </div>
+
+
+                            <div class="tooltip-stat">
+
+                                Tourism contribution:
+
+                                <span class="tooltip-value">
+
+                                    ${(+d.Value).toFixed(2)}%
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="tooltip-source">
+
+                                Source: ${d.Source}
+
+                            </div>
+
+                            `
+                        );
+
+                }
+
+            )
+
+
+
+            .on(
+
+                "mousemove",
+
+                function(event) {
+
+
+                    const box =
+
+                        wrapper
+                            .getBoundingClientRect();
+
+
+
+                    tooltip
+
+                        .style(
+
+                            "left",
+
+                            (
+
+                                event.clientX
+                                -
+                                box.left
+                                +
+                                15
+
+                            )
+
+                            +
+
+                            "px"
+
+                        )
+
+                        .style(
+
+                            "top",
+
+                            (
+
+                                event.clientY
+                                -
+                                box.top
+                                +
+                                15
+
+                            )
+
+                            +
+
+                            "px"
+
+                        );
+
+                }
+
+            )
+
+
+
+            .on(
+
+                "mouseleave",
+
+                function(event, d) {
+
+
+                    d3.select(this)
+
+                        .transition()
+
+                        .duration(
+                            160
+                        )
+
+                        .attr(
+
+                            "r",
+
+                            radius(+d.Value)
+
+                        );
+
+
+                    tooltip
+
+                        .style(
+                            "opacity",
+                            0
+                        );
+
+                }
+
+            );
+
+
+
+    /* ======================================================
+       BUBBLE LIGHT REFLECTION
+    ====================================================== */
+
+    bubbleLayer
+
+        .selectAll(".inner-bubble")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("circle")
+
+        .attr(
+            "class",
+            "inner-bubble"
+        )
+
+        .attr(
+
+            "cx",
+
+            d =>
+                d.x
+                -
+                radius(+d.Value)
+                *
+                0.20
+
+        )
+
+        .attr(
+
+            "cy",
+
+            d =>
+                d.y
+                -
+                radius(+d.Value)
+                *
+                0.20
+
+        )
+
+        .attr(
+
+            "r",
+
+            d =>
+                Math.max(
+
+                    3,
+
+                    radius(+d.Value)
+                    *
+                    0.22
+
+                )
+
+        );
+
+
+
+    /* ======================================================
+       LEADER LINES
+    ====================================================== */
+
+    labelLayer
+
+        .selectAll(".leader-line")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("line")
+
+        .attr(
+            "class",
+            "leader-line"
+        )
+
+        .attr(
+            "x1",
+            d => d.x
+        )
+
+        .attr(
+            "y1",
+            d => d.y
+        )
+
+        .attr(
+
+            "x2",
+
+            d =>
+                d.x
+                +
+                +d.dx
+
+        )
+
+        .attr(
+
+            "y2",
+
+            d =>
+                d.y
+                +
+                +d.dy
+
+        );
+
+
+
+    /* ======================================================
+       COUNTRY + FLAG LABEL
+    ====================================================== */
+
+    labelLayer
+
+        .selectAll(".country-label")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("text")
+
+        .attr(
+            "class",
+            "country-label"
+        )
+
+        .attr(
+
+            "x",
+
+            d =>
+                d.x
+                +
+                +d.dx
+
+        )
+
+        .attr(
+
+            "y",
+
+            d =>
+                d.y
+                +
+                +d.dy
+
+        )
+
+        .attr(
+
+            "text-anchor",
+
+            d =>
+                +d.dx < 0
+
+                ?
+
+                "end"
+
+                :
+
+                "start"
+
+        )
+
+        .text(
+
+            d =>
+                `${d.Flag} ${d.Country}`
+
+        );
+
+
+
+    /* ======================================================
+       TOURISM VALUE
+    ====================================================== */
+
+    labelLayer
+
+        .selectAll(".value-label")
+
+        .data(
+            tourism
+        )
+
+        .enter()
+
+        .append("text")
+
+        .attr(
+            "class",
+            "value-label"
+        )
+
+        .attr(
+
+            "x",
+
+            d =>
+                d.x
+                +
+                +d.dx
+
+        )
+
+        .attr(
+
+            "y",
+
+            d =>
+                d.y
+                +
+                +d.dy
+                +
+                16
+
+        )
+
+        .attr(
+
+            "text-anchor",
+
+            d =>
+                +d.dx < 0
+
+                ?
+
+                "end"
+
+                :
+
+                "start"
+
+        )
+
+        .text(
+
+            d =>
+                `${(+d.Value).toFixed(1)}%`
+
+        );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
+
+')
+
+
+# ============================================================
+# 6. SAVE HTML
+# ============================================================
+
+output_file <- file.path(
+  
+  getwd(),
+  
+  "pacific_tourism_part1.html"
+  
+)
+
+
+writeLines(
+  
+  html,
+  
+  output_file
+  
+)
+
+
+cat(
+  
+  "\nMap saved to:\n",
+  
+  output_file,
+  
+  "\n"
+  
+)
+
+
+# ============================================================
+# 7. OPEN IN RSTUDIO VIEWER
+# ============================================================
+
+if (
+  
+  requireNamespace(
+    
+    "rstudioapi",
+    
+    quietly = TRUE
+    
+  )
+  
+) {
+  
+  rstudioapi::viewer(
+    
+    output_file
+    
+  )
+  
+} else {
+  
+  browseURL(
+    
+    output_file
+    
+  )
+  
+}

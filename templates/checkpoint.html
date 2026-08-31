@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+{% if inline_page_css is defined %}
+<style>{{ inline_page_css | safe }}</style>
+{% endif %}
+{% endblock %}
+{% block head_scripts %}{% endblock %}
+{% block content %}
+<div class="page-header">
+<div class="eyebrow">Pacific Tourism · The dilemma</div>
+
+<h1>Every journey leaves a footprint.</h1>
+
+<div class="subtitle">
+  Tourism begins with the Pacific's natural attractions and creates economic opportunities.
+  But as the sector expands, destinations eventually reach a choice: how should tourism grow?
+</div>
+</div>
+
+<div class="journal">
+
+  <button class="reset-button" id="reset-button">Replay journey</button>
+
+  <div class="passport-strip">
+    <div class="passport-stamp">
+      Pacific<br>Tourism<br>Checkpoint
+    </div>
+    <div class="passport-copy">
+      <div class="passport-journey">Journey 04 / 07</div>
+      <div class="passport-title">The Tourism Dilemma</div>
+    </div>
+  </div>
+
+  <svg id="journey-svg"></svg>
+
+  <div class="checkpoint">
+    <div class="checkpoint-label">Tourism checkpoint</div>
+    <div class="checkpoint-title">Which path does tourism take?</div>
+    <div class="checkpoint-subtitle">
+      Tourism creates economic value—but its long-term impact depends on how that growth is managed.
+    </div>
+  </div>
+
+  <div class="choice choice-left" id="bad-choice">
+    <div class="choice-tag">Route A</div>
+    <div class="choice-title">Growth without limits</div>
+    <div class="choice-short">Short-term expansion increases pressure on the ecosystems tourism depends on.</div>
+  </div>
+
+  <div class="choice choice-right" id="good-choice">
+    <div class="choice-tag">Route B</div>
+    <div class="choice-title">Growth within ecological limits</div>
+    <div class="choice-short">Tourism development is aligned with the protection of the ecosystems that sustain it.</div>
+  </div>
+
+</div>
+{% endblock %}
+{% block scripts %}
+{% if inline_page_js is defined %}
+<script>{{ inline_page_js | safe }}</script>
+{% else %}
+<script src="static/js/checkpoint.js"></script>
+{% endif %}
+{% endblock %}

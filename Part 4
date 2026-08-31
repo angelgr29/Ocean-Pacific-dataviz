@@ -1,0 +1,2397 @@
+# ============================================================
+# CHAPTER 4 — TOURISM CHECKPOINT
+# Travel journal / decision visualization
+#
+# RStudio -> standalone HTML
+# ============================================================
+
+
+# ============================================================
+# 0. OUTPUT FILE
+# ============================================================
+
+output_file <- file.path(
+  getwd(),
+  "chapter4_tourism_checkpoint.html"
+)
+
+
+# ============================================================
+# 1. HTML
+# ============================================================
+
+html <- '
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>
+Tourism Checkpoint
+</title>
+
+
+<style>
+
+
+/* ==========================================================
+   GLOBAL
+========================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    background:
+        #E8E3D7;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color:
+        #20482A;
+}
+
+
+body {
+
+    padding:
+        34px;
+}
+
+
+.page {
+
+    max-width:
+        1450px;
+
+    margin:
+        0 auto;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.eyebrow {
+
+    color:
+        #6F9270;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        2.5px;
+
+    text-transform:
+        uppercase;
+
+    margin-bottom:
+        8px;
+}
+
+
+h1 {
+
+    margin:
+        0;
+
+    color:
+        #183E23;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        48px;
+
+    line-height:
+        1;
+
+    letter-spacing:
+        -1.5px;
+}
+
+
+.subtitle {
+
+    margin-top:
+        14px;
+
+    max-width:
+        770px;
+
+    color:
+        #657367;
+
+    font-size:
+        15px;
+
+    line-height:
+        1.55;
+}
+
+
+/* ==========================================================
+   JOURNAL PAGE
+========================================================== */
+
+.journal {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    height:
+        780px;
+
+    margin-top:
+        26px;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        #C9C2B0;
+
+    border-radius:
+        25px;
+
+    background:
+        #F8F4E8;
+
+    box-shadow:
+        0 18px 55px
+        rgba(62,67,51,0.13);
+}
+
+
+/* paper grain */
+
+.journal::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background-image:
+        radial-gradient(
+            rgba(62,72,57,0.04) 0.8px,
+            transparent 0.8px
+        );
+
+    background-size:
+        16px 16px;
+
+    pointer-events:
+        none;
+}
+
+
+/* ==========================================================
+   TOP PASSPORT STRIP
+========================================================== */
+
+.passport-strip {
+
+    position:
+        absolute;
+
+    left:
+        34px;
+
+    top:
+        28px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    z-index:
+        10;
+}
+
+
+.passport-stamp {
+
+    width:
+        94px;
+
+    height:
+        94px;
+
+    border:
+        2px solid
+        rgba(64,101,69,0.50);
+
+    border-radius:
+        50%;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    text-align:
+        center;
+
+    color:
+        #476A4C;
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.5px;
+
+    line-height:
+        1.35;
+
+    text-transform:
+        uppercase;
+
+    transform:
+        rotate(-8deg);
+}
+
+
+.passport-copy {
+
+    max-width:
+        210px;
+
+    color:
+        #647066;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.45;
+}
+
+
+.passport-copy strong {
+
+    color:
+        #23472B;
+}
+
+
+/* ==========================================================
+   MAIN SVG
+========================================================== */
+
+#journey-svg {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    display:
+        block;
+}
+
+
+/* ==========================================================
+   ROUTE
+========================================================== */
+
+.route {
+
+    fill:
+        none;
+
+    stroke:
+        #6F9B74;
+
+    stroke-width:
+        3;
+
+    stroke-linecap:
+        round;
+
+    stroke-dasharray:
+        4 9;
+
+    opacity:
+        0.75;
+}
+
+
+.route-dim {
+
+    opacity:
+        0.17;
+
+    transition:
+        opacity 0.35s ease;
+}
+
+
+.route-active {
+
+    opacity:
+        1;
+
+    stroke-width:
+        4;
+
+    transition:
+        opacity 0.35s ease,
+        stroke-width 0.35s ease;
+}
+
+
+.route-good {
+
+    stroke:
+        #4B8856;
+}
+
+
+.route-bad {
+
+    stroke:
+        #A76C53;
+}
+
+
+/* ==========================================================
+   JOURNEY NODES
+========================================================== */
+
+.node-main {
+
+    fill:
+        #EFF4E9;
+
+    stroke:
+        #80A584;
+
+    stroke-width:
+        1.6;
+}
+
+
+.node-icon {
+
+    font-size:
+        25px;
+
+    text-anchor:
+        middle;
+
+    dominant-baseline:
+        central;
+}
+
+
+.node-title {
+
+    fill:
+        #244A2D;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    text-anchor:
+        middle;
+}
+
+
+.node-subtitle {
+
+    fill:
+        #718075;
+
+    font-size:
+        9px;
+
+    font-weight:
+        600;
+
+    text-anchor:
+        middle;
+}
+
+
+/* ==========================================================
+   AIRPLANE
+========================================================== */
+
+.plane {
+
+    font-size:
+        22px;
+
+    text-anchor:
+        middle;
+
+    dominant-baseline:
+        central;
+
+    pointer-events:
+        none;
+}
+
+
+/* ==========================================================
+   CHECKPOINT
+========================================================== */
+
+.checkpoint {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        400px;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        280px;
+
+    text-align:
+        center;
+
+    z-index:
+        20;
+}
+
+
+.checkpoint-label {
+
+    display:
+        inline-block;
+
+    padding:
+        5px 10px;
+
+    border:
+        1px solid
+        #9EB49E;
+
+    border-radius:
+        999px;
+
+    background:
+        #F4F1E5;
+
+    color:
+        #6A816C;
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.6px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.checkpoint-title {
+
+    margin-top:
+        8px;
+
+    color:
+        #1F4829;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        24px;
+
+    line-height:
+        1.05;
+}
+
+
+.checkpoint-subtitle {
+
+    margin-top:
+        7px;
+
+    color:
+        #687468;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.4;
+}
+
+
+/* ==========================================================
+   PATH CHOICES
+========================================================== */
+
+.choice {
+
+    position:
+        absolute;
+
+    bottom:
+        80px;
+
+    width:
+        315px;
+
+    padding:
+        18px 19px;
+
+    border-radius:
+        20px;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        opacity 0.22s ease;
+
+    z-index:
+        30;
+}
+
+
+.choice:hover {
+
+    transform:
+        translateY(-5px);
+}
+
+
+.choice-left {
+
+    left:
+        48px;
+
+    background:
+        #F3E7DF;
+
+    border:
+        1px solid
+        #D3AB96;
+}
+
+
+.choice-right {
+
+    right:
+        48px;
+
+    background:
+        #E7F0E2;
+
+    border:
+        1px solid
+        #A5C5A5;
+}
+
+
+.choice.active {
+
+    transform:
+        translateY(-7px);
+
+    box-shadow:
+        0 12px 28px
+        rgba(58,70,53,0.14);
+}
+
+
+.choice.inactive {
+
+    opacity:
+        0.55;
+}
+
+
+.choice-tag {
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.5px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.choice-left .choice-tag {
+
+    color:
+        #9D674F;
+}
+
+
+.choice-right .choice-tag {
+
+    color:
+        #5C8A62;
+}
+
+
+.choice-title {
+
+    margin-top:
+        5px;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        22px;
+
+    font-weight:
+        bold;
+
+    line-height:
+        1.05;
+}
+
+
+.choice-left .choice-title {
+
+    color:
+        #7D503D;
+}
+
+
+.choice-right .choice-title {
+
+    color:
+        #315D39;
+}
+
+
+.choice-short {
+
+    margin-top:
+        7px;
+
+    color:
+        #687269;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.45;
+}
+
+
+/* ==========================================================
+   CONSEQUENCES
+========================================================== */
+
+.consequences {
+
+    max-height:
+        0;
+
+    overflow:
+        hidden;
+
+    opacity:
+        0;
+
+    transition:
+        max-height 0.35s ease,
+        opacity 0.35s ease,
+        margin-top 0.35s ease;
+
+    margin-top:
+        0;
+}
+
+
+.choice.active .consequences {
+
+    max-height:
+        180px;
+
+    opacity:
+        1;
+
+    margin-top:
+        13px;
+}
+
+
+.consequence {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin-top:
+        8px;
+
+    color:
+        #59665C;
+
+    font-size:
+        10px;
+}
+
+
+.consequence-icon {
+
+    width:
+        25px;
+
+    flex:
+        0 0 25px;
+
+    text-align:
+        center;
+
+    font-size:
+        16px;
+}
+
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+.reset-button {
+
+    position:
+        absolute;
+
+    right:
+        26px;
+
+    top:
+        25px;
+
+    z-index:
+        40;
+
+    border:
+        1px solid
+        #B6C5B3;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(249,246,236,0.92);
+
+    color:
+        #547058;
+
+    padding:
+        8px 13px;
+
+    font-size:
+        9px;
+
+    font-weight:
+        750;
+
+    cursor:
+        pointer;
+}
+
+
+.reset-button:hover {
+
+    background:
+        #EEF3E8;
+}
+
+
+/* ==========================================================
+   FINAL MESSAGE
+========================================================== */
+
+.final-message {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    bottom:
+        23px;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        480px;
+
+    padding:
+        10px 18px;
+
+    border-radius:
+        999px;
+
+    text-align:
+        center;
+
+    background:
+        #234B2D;
+
+    color:
+        white;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    opacity:
+        0;
+
+    transition:
+        opacity 0.35s ease;
+
+    z-index:
+        40;
+}
+
+
+.final-message.visible {
+
+    opacity:
+        1;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (
+    max-width: 900px
+) {
+
+    body {
+
+        padding:
+            18px;
+    }
+
+
+    .journal {
+
+        height:
+            950px;
+    }
+
+
+    .choice {
+
+        width:
+            260px;
+
+        bottom:
+            95px;
+    }
+
+
+    .choice-left {
+
+        left:
+            20px;
+    }
+
+
+    .choice-right {
+
+        right:
+            20px;
+    }
+
+
+    .final-message {
+
+        width:
+            330px;
+    }
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+<div class="eyebrow">
+Pacific Tourism · The dilemma
+</div>
+
+
+<h1>
+Every journey leaves a footprint.
+</h1>
+
+
+<div class="subtitle">
+
+Tourism begins with the Pacifics natural attractions and creates
+economic opportunities. But as the sector expands, destinations
+eventually reach a choice: how should tourism grow?
+
+</div>
+
+
+
+<div class="journal">
+
+
+<button
+    class="reset-button"
+    id="reset-button">
+
+    Replay journey
+
+</button>
+
+
+
+<!-- PASSPORT / INTRO -->
+
+<div class="passport-strip">
+
+    <div class="passport-stamp">
+
+        Pacific<br>
+        Tourism<br>
+        Checkpoint
+
+    </div>
+
+    <div class="passport-copy">
+
+        <strong>
+        Destination:
+        </strong>
+
+        Pacific Islands
+
+        <br><br>
+
+        Follow the route until tourism reaches its
+        sustainability checkpoint.
+
+    </div>
+
+</div>
+
+
+
+<svg id="journey-svg"></svg>
+
+
+
+<!-- CHECKPOINT -->
+
+<div class="checkpoint">
+
+    <div class="checkpoint-label">
+        Tourism checkpoint
+    </div>
+
+    <div class="checkpoint-title">
+        Which path does<br>
+        tourism take?
+    </div>
+
+    <div class="checkpoint-subtitle">
+        Growth can create economic value — but its long-term
+        impact depends on how that growth is managed.
+    </div>
+
+</div>
+
+
+
+<!-- LEFT CHOICE -->
+
+<div
+    class="choice choice-left"
+    id="bad-choice">
+
+    <div class="choice-tag">
+        Route A
+    </div>
+
+    <div class="choice-title">
+        Growth without limits
+    </div>
+
+    <div class="choice-short">
+        Tourism expands while ecosystem protection remains secondary.
+    </div>
+
+
+    <div class="consequences">
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                🏨
+            </div>
+
+            More tourism infrastructure
+
+        </div>
+
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                ⚠️
+            </div>
+
+            Greater pressure on natural resources
+
+        </div>
+
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                🪸
+            </div>
+
+            Ecosystem degradation reduces destination quality
+
+        </div>
+
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                📉
+            </div>
+
+            Tourism eventually risks losing its natural asset
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- RIGHT CHOICE -->
+
+<div
+    class="choice choice-right"
+    id="good-choice">
+
+    <div class="choice-tag">
+        Route B
+    </div>
+
+    <div class="choice-title">
+        Sustainable tourism
+    </div>
+
+    <div class="choice-short">
+        Tourism growth is managed alongside ecosystem protection.
+    </div>
+
+
+    <div class="consequences">
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                🌱
+            </div>
+
+            Conservation becomes part of tourism planning
+
+        </div>
+
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                🤝
+            </div>
+
+            Communities participate in tourism benefits
+
+        </div>
+
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                🐠
+            </div>
+
+            Ecosystems remain part of the destination experience
+
+        </div>
+
+
+        <div class="consequence">
+
+            <div class="consequence-icon">
+                ♻️
+            </div>
+
+            Tourism and conservation reinforce each other
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div
+    class="final-message"
+    id="final-message">
+
+    Tourism and conservation can coexist — when protecting nature
+    becomes part of the tourism model.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ==========================================================
+   SVG SETUP
+========================================================== */
+
+const svg =
+    document.getElementById(
+        "journey-svg"
+    );
+
+
+const journal =
+    document.querySelector(
+        ".journal"
+    );
+
+
+let width =
+    journal.clientWidth;
+
+
+const height =
+    780;
+
+
+svg.setAttribute(
+    "viewBox",
+    `0 0 ${width} ${height}`
+);
+
+
+/* ==========================================================
+   HELPERS
+========================================================== */
+
+function svgElement(
+    tag
+) {
+
+    return document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        tag
+    );
+
+}
+
+
+function addText(
+    x,
+    y,
+    text,
+    className
+) {
+
+    const element =
+        svgElement(
+            "text"
+        );
+
+
+    element.setAttribute(
+        "x",
+        x
+    );
+
+
+    element.setAttribute(
+        "y",
+        y
+    );
+
+
+    element.setAttribute(
+        "class",
+        className
+    );
+
+
+    element.textContent =
+        text;
+
+
+    svg.appendChild(
+        element
+    );
+
+
+    return element;
+
+}
+
+
+/* ==========================================================
+   JOURNEY NODES
+========================================================== */
+
+const nodes = [
+
+    {
+
+        x:
+            width * 0.25,
+
+        y:
+            180,
+
+        icon:
+            "🌴",
+
+        title:
+            "Natural ecosystems",
+
+        subtitle:
+            "The attraction"
+
+    },
+
+
+    {
+
+        x:
+            width * 0.39,
+
+        y:
+            265,
+
+        icon:
+            "✈️",
+
+        title:
+            "Tourism",
+
+        subtitle:
+            "Visitors arrive"
+
+    },
+
+
+    {
+
+        x:
+            width * 0.53,
+
+        y:
+            180,
+
+        icon:
+            "💰",
+
+        title:
+            "Economic value",
+
+        subtitle:
+            "Income · jobs · growth"
+
+    },
+
+
+    {
+
+        x:
+            width * 0.67,
+
+        y:
+            265,
+
+        icon:
+            "🏨",
+
+        title:
+            "Tourism expansion",
+
+        subtitle:
+            "Infrastructure · activity"
+
+    },
+
+
+    {
+
+        x:
+            width * 0.79,
+
+        y:
+            180,
+
+        icon:
+            "⚠️",
+
+        title:
+            "Environmental pressure",
+
+        subtitle:
+            "The trade-off appears"
+
+    }
+
+];
+
+
+/* ==========================================================
+   MAIN ROUTE
+========================================================== */
+
+const mainRoute =
+    svgElement(
+        "path"
+    );
+
+
+mainRoute.setAttribute(
+    "class",
+    "route"
+);
+
+
+mainRoute.setAttribute(
+
+    "d",
+
+    `
+    M
+    ${nodes[0].x}
+    ${nodes[0].y}
+
+    C
+    ${width * 0.31}
+    ${110},
+
+    ${width * 0.34}
+    ${325},
+
+    ${nodes[1].x}
+    ${nodes[1].y}
+
+    S
+    ${width * 0.47}
+    ${115},
+
+    ${nodes[2].x}
+    ${nodes[2].y}
+
+    S
+    ${width * 0.61}
+    ${325},
+
+    ${nodes[3].x}
+    ${nodes[3].y}
+
+    S
+    ${width * 0.74}
+    ${120},
+
+    ${nodes[4].x}
+    ${nodes[4].y}
+    `
+
+);
+
+
+svg.appendChild(
+    mainRoute
+);
+
+
+/* ==========================================================
+   DRAW NODES
+========================================================== */
+
+nodes.forEach(
+
+    node => {
+
+
+        const circle =
+            svgElement(
+                "circle"
+            );
+
+
+        circle.setAttribute(
+            "cx",
+            node.x
+        );
+
+
+        circle.setAttribute(
+            "cy",
+            node.y
+        );
+
+
+        circle.setAttribute(
+            "r",
+            37
+        );
+
+
+        circle.setAttribute(
+            "class",
+            "node-main"
+        );
+
+
+        svg.appendChild(
+            circle
+        );
+
+
+        addText(
+
+            node.x,
+
+            node.y + 1,
+
+            node.icon,
+
+            "node-icon"
+
+        );
+
+
+        addText(
+
+            node.x,
+
+            node.y + 59,
+
+            node.title,
+
+            "node-title"
+
+        );
+
+
+        addText(
+
+            node.x,
+
+            node.y + 76,
+
+            node.subtitle,
+
+            "node-subtitle"
+
+        );
+
+    }
+
+);
+
+
+/* ==========================================================
+   CHECKPOINT TARGET
+========================================================== */
+
+const checkpointX =
+    width * 0.50;
+
+
+const checkpointY =
+    415;
+
+
+/* visual checkpoint circle */
+
+const checkpointCircle =
+    svgElement(
+        "circle"
+    );
+
+
+checkpointCircle.setAttribute(
+    "cx",
+    checkpointX
+);
+
+
+checkpointCircle.setAttribute(
+    "cy",
+    checkpointY
+);
+
+
+checkpointCircle.setAttribute(
+    "r",
+    56
+);
+
+
+checkpointCircle.setAttribute(
+    "fill",
+    "#F5F1E4"
+);
+
+
+checkpointCircle.setAttribute(
+    "stroke",
+    "#6D8C70"
+);
+
+
+checkpointCircle.setAttribute(
+    "stroke-width",
+    1.7
+);
+
+
+svg.appendChild(
+    checkpointCircle
+);
+
+
+/* ==========================================================
+   ROUTE FROM PRESSURE TO CHECKPOINT
+========================================================== */
+
+const checkpointRoute =
+    svgElement(
+        "path"
+    );
+
+
+checkpointRoute.setAttribute(
+    "class",
+    "route"
+);
+
+
+checkpointRoute.setAttribute(
+
+    "d",
+
+    `
+    M
+    ${nodes[4].x}
+    ${nodes[4].y + 38}
+
+    C
+    ${width * 0.76}
+    ${320},
+
+    ${width * 0.60}
+    ${350},
+
+    ${checkpointX}
+    ${checkpointY - 55}
+    `
+
+);
+
+
+svg.appendChild(
+    checkpointRoute
+);
+
+
+/* ==========================================================
+   SPLIT ROUTES
+========================================================== */
+
+const badRoute =
+    svgElement(
+        "path"
+    );
+
+
+badRoute.setAttribute(
+    "class",
+    "route route-bad"
+);
+
+
+badRoute.setAttribute(
+
+    "d",
+
+    `
+    M
+    ${checkpointX - 40}
+    ${checkpointY + 40}
+
+    C
+    ${width * 0.43}
+    ${520},
+
+    ${width * 0.31}
+    ${540},
+
+    ${width * 0.20}
+    ${610}
+    `
+
+);
+
+
+svg.appendChild(
+    badRoute
+);
+
+
+
+const goodRoute =
+    svgElement(
+        "path"
+    );
+
+
+goodRoute.setAttribute(
+    "class",
+    "route route-good"
+);
+
+
+goodRoute.setAttribute(
+
+    "d",
+
+    `
+    M
+    ${checkpointX + 40}
+    ${checkpointY + 40}
+
+    C
+    ${width * 0.58}
+    ${520},
+
+    ${width * 0.69}
+    ${540},
+
+    ${width * 0.80}
+    ${610}
+    `
+
+);
+
+
+svg.appendChild(
+    goodRoute
+);
+
+
+/* ==========================================================
+   END ICONS
+========================================================== */
+
+addText(
+
+    width * 0.20,
+
+    610,
+
+    "🪸",
+
+    "node-icon"
+
+);
+
+
+addText(
+
+    width * 0.80,
+
+    610,
+
+    "🌱",
+
+    "node-icon"
+
+);
+
+
+/* ==========================================================
+   COMPLETE INVISIBLE PLANE PATH
+========================================================== */
+
+const planePath =
+    svgElement(
+        "path"
+    );
+
+
+planePath.setAttribute(
+    "fill",
+    "none"
+);
+
+
+planePath.setAttribute(
+    "stroke",
+    "none"
+);
+
+
+planePath.setAttribute(
+
+    "d",
+
+    `
+    M
+    ${nodes[0].x}
+    ${nodes[0].y}
+
+    C
+    ${width * 0.31}
+    ${110},
+
+    ${width * 0.34}
+    ${325},
+
+    ${nodes[1].x}
+    ${nodes[1].y}
+
+    S
+    ${width * 0.47}
+    ${115},
+
+    ${nodes[2].x}
+    ${nodes[2].y}
+
+    S
+    ${width * 0.61}
+    ${325},
+
+    ${nodes[3].x}
+    ${nodes[3].y}
+
+    S
+    ${width * 0.74}
+    ${120},
+
+    ${nodes[4].x}
+    ${nodes[4].y}
+
+    C
+    ${width * 0.76}
+    ${320},
+
+    ${width * 0.60}
+    ${350},
+
+    ${checkpointX}
+    ${checkpointY}
+    `
+
+);
+
+
+svg.appendChild(
+    planePath
+);
+
+
+/* ==========================================================
+   AIRPLANE
+========================================================== */
+
+const plane =
+    svgElement(
+        "text"
+    );
+
+
+plane.setAttribute(
+    "class",
+    "plane"
+);
+
+
+plane.textContent =
+    "✈";
+
+
+svg.appendChild(
+    plane
+);
+
+
+/* ==========================================================
+   PLANE ANIMATION
+========================================================== */
+
+const journeyLength =
+    planePath.getTotalLength();
+
+
+const animationDuration =
+    9500;
+
+
+let startTime =
+    null;
+
+
+let animationFrame =
+    null;
+
+
+function animatePlane(
+    timestamp
+) {
+
+
+    if (
+        startTime === null
+    ) {
+
+        startTime =
+            timestamp;
+
+    }
+
+
+    const rawProgress =
+
+        Math.min(
+
+            (
+                timestamp
+                -
+                startTime
+            )
+
+            /
+
+            animationDuration,
+
+            1
+
+        );
+
+
+    /* smooth movement */
+
+    const progress =
+
+        rawProgress < 0.5
+
+        ?
+
+        2
+        *
+        rawProgress
+        *
+        rawProgress
+
+        :
+
+        1
+        -
+        Math.pow(
+            -2 * rawProgress + 2,
+            2
+        )
+        /
+        2;
+
+
+    const distance =
+
+        journeyLength
+        *
+        progress;
+
+
+    const point =
+
+        planePath
+            .getPointAtLength(
+                distance
+            );
+
+
+    const nextPoint =
+
+        planePath
+            .getPointAtLength(
+
+                Math.min(
+                    distance + 3,
+                    journeyLength
+                )
+
+            );
+
+
+    const angle =
+
+        Math.atan2(
+
+            nextPoint.y
+            -
+            point.y,
+
+            nextPoint.x
+            -
+            point.x
+
+        )
+
+        *
+        180
+        /
+        Math.PI;
+
+
+    plane.setAttribute(
+        "x",
+        point.x
+    );
+
+
+    plane.setAttribute(
+        "y",
+        point.y - 13
+    );
+
+
+    plane.setAttribute(
+
+        "transform",
+
+        `
+        rotate(
+            ${angle},
+            ${point.x},
+            ${point.y - 13}
+        )
+        `
+
+    );
+
+
+    if (
+        rawProgress < 1
+    ) {
+
+        animationFrame =
+
+            requestAnimationFrame(
+                animatePlane
+            );
+
+    }
+
+
+    else {
+
+        plane.setAttribute(
+            "x",
+            checkpointX
+        );
+
+
+        plane.setAttribute(
+            "y",
+            checkpointY - 69
+        );
+
+
+        plane.setAttribute(
+            "transform",
+            "rotate(0)"
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   CHOICE INTERACTION
+========================================================== */
+
+const badChoice =
+    document.getElementById(
+        "bad-choice"
+    );
+
+
+const goodChoice =
+    document.getElementById(
+        "good-choice"
+    );
+
+
+const finalMessage =
+    document.getElementById(
+        "final-message"
+    );
+
+
+function resetChoices() {
+
+
+    badChoice
+        .classList
+        .remove(
+            "active",
+            "inactive"
+        );
+
+
+    goodChoice
+        .classList
+        .remove(
+            "active",
+            "inactive"
+        );
+
+
+    badRoute
+        .classList
+        .remove(
+            "route-active",
+            "route-dim"
+        );
+
+
+    goodRoute
+        .classList
+        .remove(
+            "route-active",
+            "route-dim"
+        );
+
+
+    finalMessage
+        .classList
+        .remove(
+            "visible"
+        );
+
+}
+
+
+function chooseBad() {
+
+
+    resetChoices();
+
+
+    badChoice
+        .classList
+        .add(
+            "active"
+        );
+
+
+    goodChoice
+        .classList
+        .add(
+            "inactive"
+        );
+
+
+    badRoute
+        .classList
+        .add(
+            "route-active"
+        );
+
+
+    goodRoute
+        .classList
+        .add(
+            "route-dim"
+        );
+
+
+    finalMessage
+        .classList
+        .add(
+            "visible"
+        );
+
+}
+
+
+function chooseGood() {
+
+
+    resetChoices();
+
+
+    goodChoice
+        .classList
+        .add(
+            "active"
+        );
+
+
+    badChoice
+        .classList
+        .add(
+            "inactive"
+        );
+
+
+    goodRoute
+        .classList
+        .add(
+            "route-active"
+        );
+
+
+    badRoute
+        .classList
+        .add(
+            "route-dim"
+        );
+
+
+    finalMessage
+        .classList
+        .add(
+            "visible"
+        );
+
+}
+
+
+badChoice
+    .addEventListener(
+        "click",
+        chooseBad
+    );
+
+
+goodChoice
+    .addEventListener(
+        "click",
+        chooseGood
+    );
+
+
+/* ==========================================================
+   REPLAY
+========================================================== */
+
+const resetButton =
+    document.getElementById(
+        "reset-button"
+    );
+
+
+function replay() {
+
+
+    if (
+        animationFrame
+    ) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+    }
+
+
+    resetChoices();
+
+
+    startTime =
+        null;
+
+
+    requestAnimationFrame(
+        animatePlane
+    );
+
+}
+
+
+resetButton
+    .addEventListener(
+        "click",
+        replay
+    );
+
+
+/* ==========================================================
+   INITIAL RUN
+========================================================== */
+
+requestAnimationFrame(
+    animatePlane
+);
+
+
+</script>
+
+
+</body>
+
+</html>
+'
+
+
+# ============================================================
+# 2. SAVE
+# ============================================================
+
+writeLines(
+  html,
+  output_file
+)
+
+
+cat(
+  "\\nVisualization saved to:\\n",
+  output_file,
+  "\\n"
+)
+
+
+# ============================================================
+# 3. OPEN
+# ============================================================
+
+if (
+  requireNamespace(
+    "rstudioapi",
+    quietly = TRUE
+  )
+) {
+  
+  rstudioapi::viewer(
+    output_file
+  )
+  
+} else {
+  
+  browseURL(
+    output_file
+  )
+}

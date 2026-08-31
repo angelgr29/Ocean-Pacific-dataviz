@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block content %}
+<div class="header">
+  <div class="title-area">
+    <div class="eyebrow">Pacific Tourism · Overview</div>
+    <h1>Paradise under pressure</h1>
+    <div class="subtitle">
+      "A six-chapter data story exploring how Pacific Island tourism depends on natural ecosystems"
+      " and how environmental change puts that relationship under pressure."
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:10px;">
+  {% for page in pages %}
+  {% if page.slug != 'index' %}
+  <a href="{{ page.output }}" style="text-decoration:none;color:inherit;">
+    <div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:18px;padding:20px;min-height:140px;">
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#66BB6A;">
+        {{ page.chapter }}
+      </div>
+      <div style="margin-top:8px;font-size:22px;font-weight:800;color:#1B5E20;line-height:1.15;">
+        {{ page.headline }}
+      </div>
+      {% if page.status == 'placeholder' %}
+      <div style="margin-top:10px;font-size:11px;color:#709075;">Coming soon</div>
+      {% else %}
+      <div style="margin-top:10px;font-size:11px;color:#527A57;">Open chapter →</div>
+      {% endif %}
+    </div>
+  </a>
+  {% endif %}
+  {% endfor %}
+</div>
+
+<div class="footer" style="margin-top:24px;">
+  <div>Narrative structure: Economy → Attractions → Environment → Checkpoint → Conclusion</div>
+  <div>Built with Python, Jinja2, and D3.js</div>
+</div>
+{% endblock %}

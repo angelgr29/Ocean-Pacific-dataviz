@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Pacific Tourism{% endblock %}</title>
+  <script>
+    if (location.search.includes("embed=1")) {
+      document.documentElement.classList.add("book-embed");
+    }
+  </script>
+  {% if book_embed_css is defined %}
+  <style>{{ book_embed_css | safe }}</style>
+  {% endif %}
+  {% if use_theme_css is not defined or use_theme_css %}
+  {% if inline_theme_css is defined %}
+  <style>{{ inline_theme_css | safe }}</style>
+  {% else %}
+  <link rel="stylesheet" href="static/css/theme.css">
+  {% endif %}
+  {% endif %}
+  {% block extra_css %}{% endblock %}
+  {% block head_scripts %}
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  {% endblock %}
+</head>
+<body{% if body_class is defined %} class="{{ body_class }}"{% endif %}>
+  <div class="page">
+    {% if show_nav is not defined or show_nav %}
+    {% from "includes/nav.html" import story_nav %}
+    {{ story_nav(pages, active_slug) }}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+{% if inline_page_css is defined %}
+<style>{{ inline_page_css | safe }}</style>
+{% else %}
+<link rel="stylesheet" href="static/css/attractions.css">
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="page-header">
+<div class="header">
+  <div class="title-area">
+    <div class="eyebrow">Pacific Tourism · Chapter 2</div>
+    <h1>Nature is the destination.</h1>
+    <div class="subtitle">
+      Tourism across Pacific Island destinations is closely tied to beaches, reefs, lagoons, marine
+      wildlife and distinctive island landscapes. Explore the map to discover one emblematic tourism
+      attraction from each destination.
+    </div>
+  </div>
+
+  <div class="intro-box">
+    <div class="intro-tag">Tourism &amp; ecosystems</div>
+    <div class="intro-title">The attraction is often the ecosystem itself.</div>
+    <div class="intro-text">
+      Coral reefs, lagoons, forests and marine wildlife are not only environmental assets — they are
+      central components of the Pacific tourism product.
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="map-wrapper">
+  <svg id="pacific-map"></svg>
+
+  <div class="map-instruction">
+    <div class="instruction-title">Explore the map</div>
+    <div class="instruction-text">Hover over an island marker to discover an emblematic tourism attraction.</div>
+  </div>
+
+  <div class="attraction-card" id="attraction-card">
+    <div class="card-image-wrap">
+      <img class="card-image" id="card-image" src="" alt="">
+      <div class="card-image-overlay"></div>
+      <div class="card-country" id="card-country"></div>
+    </div>
+    <div class="card-content">
+      <div class="card-tag">Tourism attraction</div>
+      <div class="card-title" id="card-title"></div>
+      <div class="card-experience" id="card-experience"></div>
+      <div class="card-description" id="card-description"></div>
+    </div>
+  </div>
+
+  <div class="story-box attractions">
+    <div class="story-heading">A Destination Like No Other</div>
+    <div class="story-text">
+      From coral reefs and turquoise lagoons to volcanic landscapes and rich cultural heritage, 
+      the Pacific offers tourism experiences shaped by its extraordinary natural and cultural diversity.
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div>Hover over a destination to reveal its tourism attraction.</div>
+  <div>Map: Natural Earth / World Atlas · Interactive visualization: D3.js</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>window.PACIFIC_DATA = { attractions: {{ attractions_json | safe }} };</script>
+{% if inline_page_js is defined %}
+<script>{{ inline_page_js | safe }}</script>
+{% else %}
+<script src="static/js/pacific-map.js"></script>
+<script src="static/js/attractions.js"></script>
+{% endif %}
+{% endblock %}

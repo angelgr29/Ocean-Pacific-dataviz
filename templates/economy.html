@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+{% if inline_page_css is defined %}
+<style>{{ inline_page_css | safe }}</style>
+{% else %}
+<link rel="stylesheet" href="static/css/economy.css">
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="header">
+    <div class="title-area">
+      <div class="eyebrow">Pacific Tourism · Chapter 1</div>
+      <h1>Tourism is a lifeline.</h1>
+      <div class="subtitle">
+        Tourism represents an important share of economic activity across several Pacific Island
+        economies, although the level of dependence differs substantially from one destination to another.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="map-wrapper">
+  <svg id="pacific-map"></svg>
+  <div id="tooltip"></div>
+
+  <div class="size-legend">
+    <div class="legend-title">Tourism contribution</div>
+    <div class="legend-bubbles">
+      <div class="legend-item"><div class="legend-circle" style="width:14px;height:14px;"></div>5%</div>
+      <div class="legend-item"><div class="legend-circle" style="width:24px;height:24px;"></div>15%</div>
+      <div class="legend-item"><div class="legend-circle" style="width:35px;height:35px;"></div>30%</div>
+    </div>
+  </div>
+
+  <div class="story-box economy">
+    <div class="story-heading">Tourism runs deep in Pacific economies</div>
+    <div class="story-text">
+      Across much of the Pacific, tourism represents a substantial share of economic activity.
+      In many of the economies shown, the sector accounts for more than 10% of GDP—highlighting
+      how closely regional prosperity is tied to tourism.
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div>Bubble area represents tourism contribution.</div>
+  <div>Sources: World Travel / UN Tourism · Basemap: World Atlas · D3.js</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>window.PACIFIC_DATA = { tourism: {{ tourism_json | safe }} };</script>
+{% if inline_page_js is defined %}
+<script>{{ inline_page_js | safe }}</script>
+{% else %}
+<script src="static/js/pacific-map.js"></script>
+<script src="static/js/economy.js"></script>
+{% endif %}
+{% endblock %}

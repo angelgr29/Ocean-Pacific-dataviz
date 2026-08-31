@@ -1,0 +1,129 @@
+#pacific-map { height: 700px; }
+
+.aura-outer {
+    fill: #66BB6A;
+    fill-opacity: 0.025;
+    stroke: #66BB6A;
+    stroke-opacity: 0.045;
+    stroke-width: 1;
+    pointer-events: none;
+}
+
+.aura-middle {
+    fill: #66BB6A;
+    fill-opacity: 0.045;
+    stroke: #66BB6A;
+    stroke-opacity: 0.065;
+    stroke-width: 1;
+    pointer-events: none;
+}
+
+.aura-inner {
+    fill: #66BB6A;
+    fill-opacity: 0.075;
+    stroke: #66BB6A;
+    stroke-opacity: 0.10;
+    stroke-width: 1;
+    pointer-events: none;
+}
+
+.bubble { cursor: pointer; }
+.bubble-world, .bubble-un {
+    fill: #66BB6A;
+    stroke: #1B5E20;
+    stroke-width: 2;
+}
+
+.inner-bubble {
+    fill: #F0F8F1;
+    opacity: 0.38;
+    pointer-events: none;
+}
+
+.pulse-ring {
+    fill: none;
+    stroke: #1B5E20;
+    stroke-width: 1.25;
+    pointer-events: none;
+}
+
+.value-label {
+    fill: #66BB6A;
+    font-weight: 800;
+    font-size: 12px;
+    paint-order: stroke;
+    stroke: #EDF7EE;
+    stroke-width: 4px;
+}
+
+.leader-line {
+    stroke: #1B5E20;
+    stroke-width: 0.9;
+    stroke-opacity: 0.28;
+    stroke-dasharray: 2 3;
+}
+
+#tooltip {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    background: #1B5E20;
+    color: #E8F5E9;
+    border-radius: 12px;
+    padding: 12px 15px;
+    min-width: 190px;
+    box-shadow: 0 8px 30px rgba(27, 94, 32, 0.18);
+    z-index: 50;
+}
+
+.tooltip-country { font-size: 16px; font-weight: 750; margin-bottom: 7px; }
+.tooltip-stat { font-size: 13px; }
+.tooltip-value { color: #B8E2BA; font-weight: 800; }
+.tooltip-source {
+    margin-top: 7px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(232, 245, 233, 0.22);
+    font-size: 11px;
+    opacity: 0.80;
+}
+
+.size-legend {
+    position: absolute;
+    left: 22px;
+    bottom: 22px;
+    background: rgba(240, 248, 241, 0.94);
+    border: 1px solid #A5D6A7;
+    border-radius: 15px;
+    padding: 13px 16px;
+    z-index: 20;
+}
+
+.legend-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    color: #1B5E20;
+    margin-bottom: 10px;
+}
+
+.legend-bubbles {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+}
+
+.legend-item {
+    text-align: center;
+    font-size: 10px;
+    color: #527A57;
+}
+
+.legend-circle {
+    margin: 0 auto 5px auto;
+    border: 1.5px solid #1B5E20;
+    border-radius: 50%;
+    background: rgba(102, 187, 106, 0.32);
+}
+
+.story-box.economy { right: 22px; bottom: 22px; width: 300px; }

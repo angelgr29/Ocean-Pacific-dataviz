@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block extra_css %}
+{% if inline_page_css is defined %}
+<style>{{ inline_page_css | safe }}</style>
+{% else %}
+<link rel="stylesheet" href="static/css/resources.css">
+{% endif %}
+{% endblock %}
+{% block head_scripts %}{% endblock %}
+{% block content %}
+<div class="resources-page">
+  <h1 class="resources-title">Resources</h1>
+  {% if resources_pdf_url %}
+  <a class="resources-link" href="{{ resources_pdf_url }}" target="_blank" rel="noopener noreferrer">
+    Datasets &amp; bibliography (PDF)
+  </a>
+  {% else %}
+  <p class="resources-note">
+    Add your PDF path in <code>src/config.py</code> as <code>RESOURCES_PDF_URL</code>, then run
+    <code>python3 build.py</code>.
+  </p>
+  {% endif %}
+</div>
+{% endblock %}

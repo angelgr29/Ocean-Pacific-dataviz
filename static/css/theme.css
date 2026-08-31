@@ -1,0 +1,212 @@
+/* Shared Pacific Tourism design system */
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #F7FBF7;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    color: #1B5E20;
+}
+
+.page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 24px 36px 38px;
+}
+
+/* Navigation */
+.story-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #C8E6C9;
+}
+
+.story-nav a {
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #A5D6A7;
+    color: #527A57;
+    background: #EEF7EF;
+    transition: all 0.2s ease;
+}
+
+.story-nav a:hover {
+    background: #E3F1E4;
+}
+
+.story-nav a.active {
+    background: #1B5E20;
+    border-color: #1B5E20;
+    color: #FFFFFF;
+}
+
+.story-nav a.placeholder {
+    opacity: 0.55;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    margin-bottom: 20px;
+}
+
+.title-area { max-width: 760px; }
+
+.eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #66BB6A;
+    margin-bottom: 9px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 46px;
+    letter-spacing: -1.8px;
+    line-height: 1;
+    color: #1B5E20;
+}
+
+.subtitle {
+    margin-top: 14px;
+    color: #527A57;
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 700px;
+}
+
+.map-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #A5D6A7;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #EAF6EB 0%, #F7FBF7 53%, #EDF7EE 100%);
+}
+
+#pacific-map {
+    display: block;
+    width: 100%;
+}
+
+.sphere { fill: #EDF7EE; }
+
+.graticule {
+    fill: none;
+    stroke: #A5D6A7;
+    stroke-width: 0.65;
+    stroke-opacity: 0.30;
+}
+
+.land {
+    fill: #B7DCB9;
+    stroke: #FFFFFF;
+    stroke-width: 0.7;
+}
+
+.coast-glow {
+    fill: none;
+    stroke: #66BB6A;
+    stroke-opacity: 0.10;
+    stroke-width: 4;
+}
+
+.ocean-title {
+    fill: #1B5E20;
+    opacity: 0.045;
+    font-weight: 800;
+    letter-spacing: 13px;
+    font-size: 43px;
+}
+
+.country-label {
+    fill: #1B5E20;
+    font-weight: 750;
+    font-size: 11px;
+    paint-order: stroke;
+    stroke: #EDF7EE;
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+
+.story-box {
+    position: absolute;
+    background: rgba(240, 248, 241, 0.94);
+    border: 1px solid #A5D6A7;
+    border-radius: 15px;
+    padding: 14px 16px;
+    z-index: 20;
+}
+
+.story-heading {
+    color: #1B5E20;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.story-text {
+    margin-top: 6px;
+    color: #527A57;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.footer {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    color: #709075;
+    font-size: 10px;
+}
+
+.intro-box {
+    width: 350px;
+    padding: 19px 21px;
+    background: #E8F5E9;
+    border: 1px solid #A5D6A7;
+    border-radius: 18px;
+}
+
+.intro-tag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 800;
+    color: #66BB6A;
+}
+
+.intro-title {
+    margin-top: 7px;
+    font-size: 19px;
+    font-weight: 750;
+    color: #1B5E20;
+}
+
+.intro-text {
+    margin-top: 7px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #527A57;
+}
+
+@media (max-width: 900px) {
+    .header { flex-direction: column; }
+    .intro-box { width: 100%; }
+}

@@ -1,0 +1,2156 @@
+import json
+import webbrowser
+from pathlib import Path
+
+
+# ============================================================
+# 1. TOURISM ATTRACTION DATA
+# ============================================================
+
+attractions = [
+
+    {
+        "Country": "Fiji",
+        "Attraction": "Coral Coast",
+        "Experience": "Coral reefs · Beaches · Snorkeling",
+        "Description":
+            "A tropical coastline known for beaches, shallow coral reefs "
+            "and accessible snorkeling.",
+        "Longitude": 178.0650,
+        "Latitude": -17.7134,
+        "Image": "images/fiji.jpg"
+    },
+
+    {
+        "Country": "Solomon Islands",
+        "Attraction": "Marovo Lagoon",
+        "Experience": "Lagoon · Diving · Coral reefs",
+        "Description":
+            "A vast lagoon system surrounded by coral reefs, forested "
+            "islands and exceptional diving sites.",
+        "Longitude": 160.1562,
+        "Latitude": -9.6457,
+        "Image": "images/solomon_islands.jpg"
+    },
+
+    {
+        "Country": "Samoa",
+        "Attraction": "To Sua Ocean Trench",
+        "Experience": "Swimming · Nature · Coastal landscape",
+        "Description":
+            "A dramatic natural swimming hole connected to the ocean "
+            "and surrounded by lush tropical vegetation.",
+        "Longitude": -172.1046,
+        "Latitude": -13.7590,
+        "Image": "images/samoa.jpg"
+    },
+
+    {
+        "Country": "Papua New Guinea",
+        "Attraction": "Tufi Fjords",
+        "Experience": "Diving · Fjords · Culture",
+        "Description":
+            "A striking coastal landscape of fjord-like inlets, reefs "
+            "and traditional villages.",
+        "Longitude": 149.3000,
+        "Latitude": -9.1000,
+        "Image": "images/papua_new_guinea.jpg"
+    },
+
+    {
+        "Country": "Nauru",
+        "Attraction": "Anibare Bay",
+        "Experience": "Beach · Lagoon · Coastal landscape",
+        "Description":
+            "One of Nauru's best-known coastal areas, with a sandy "
+            "shoreline and tropical Pacific waters.",
+        "Longitude": 166.9209,
+        "Latitude": -0.5200,
+        "Image": "images/nauru.jpg"
+    },
+
+    {
+        "Country": "Kiribati",
+        "Attraction": "Kiritimati Lagoon",
+        "Experience": "Lagoon · Fishing · Marine wildlife",
+        "Description":
+            "A vast lagoon environment surrounded by coral ecosystems "
+            "and remote island landscapes.",
+        "Longitude": -157.3630,
+        "Latitude": 1.8709,
+        "Image": "images/kiribati.jpg"
+    },
+
+    {
+        "Country": "Marshall Islands",
+        "Attraction": "Bikini Atoll",
+        "Experience": "Diving · History · Coral reefs",
+        "Description":
+            "A remote atoll internationally known for underwater "
+            "cultural heritage and marine biodiversity.",
+        "Longitude": 165.3768,
+        "Latitude": 7.1000,
+        "Image": "images/marshall_islands.jpg"
+    },
+
+    {
+        "Country": "Northern Mariana Islands",
+        "Attraction": "The Grotto",
+        "Experience": "Caves · Diving · Limestone",
+        "Description":
+            "A famous limestone cavern and diving site on Saipan "
+            "with striking blue water.",
+        "Longitude": 145.7500,
+        "Latitude": 15.2000,
+        "Image": "images/northern_mariana_islands.jpg"
+    },
+
+    {
+        "Country": "Guam",
+        "Attraction": "Tumon Bay",
+        "Experience": "Beaches · Snorkeling · Coastal tourism",
+        "Description":
+            "Guam's principal tourism district combines a protected "
+            "bay, beaches, resorts and accessible snorkeling.",
+        "Longitude": 144.7937,
+        "Latitude": 13.4443,
+        "Image": "images/guam.jpg"
+    },
+
+    {
+        "Country": "New Caledonia",
+        "Attraction": "Île des Pins",
+        "Experience": "Lagoon · Beaches · Nature",
+        "Description":
+            "An iconic island landscape known for turquoise waters, "
+            "white beaches and distinctive columnar pine trees.",
+        "Longitude": 167.5000,
+        "Latitude": -22.6000,
+        "Image": "images/new_caledonia.jpg"
+    },
+
+    {
+        "Country": "French Polynesia",
+        "Attraction": "Bora Bora Lagoon",
+        "Experience": "Lagoon · Beaches · Snorkeling",
+        "Description":
+            "Turquoise lagoon waters, coral reefs and dramatic volcanic "
+            "landscapes define one of Polynesia's most iconic destinations.",
+        "Longitude": -151.7415,
+        "Latitude": -16.5004,
+        "Image": "images/french_polynesia.jpg"
+    },
+
+    {
+        "Country": "Tonga",
+        "Attraction": "Vavaʻu Whale Watching",
+        "Experience": "Whales · Marine wildlife · Sailing",
+        "Description":
+            "Tonga is internationally known for seasonal encounters "
+            "with humpback whales in its tropical waters.",
+        "Longitude": -173.9833,
+        "Latitude": -18.6500,
+        "Image": "images/tonga.jpg"
+    },
+
+    {
+        "Country": "Micronesia, Federated State of",
+        "Attraction": "Chuuk Lagoon",
+        "Experience": "Diving · Shipwrecks · Marine history",
+        "Description":
+            "One of the world's best-known wreck-diving destinations, "
+            "with numerous World War II shipwrecks.",
+        "Longitude": 151.8428,
+        "Latitude": 7.4500,
+        "Image": "images/federated_states_micronesia.jpg"
+    },
+
+    {
+        "Country": "Vanuatu",
+        "Attraction": "Espiritu Santo Blue Holes",
+        "Experience": "Swimming · Rainforest · Freshwater",
+        "Description":
+            "Natural freshwater pools surrounded by dense tropical "
+            "forest on the island of Espiritu Santo.",
+        "Longitude": 167.9596,
+        "Latitude": -15.3767,
+        "Image": "images/vanuatu.jpg"
+    },
+
+    {
+        "Country": "Palau",
+        "Attraction": "Rock Islands",
+        "Experience": "Diving · Kayaking · Marine ecosystems",
+        "Description":
+            "Hundreds of forest-covered limestone islands surrounded "
+            "by turquoise lagoons and diverse marine ecosystems.",
+        "Longitude": 134.5825,
+        "Latitude": 7.5150,
+        "Image": "images/palau.jpg"
+    },
+
+    {
+        "Country": "American Samoa",
+        "Attraction": "National Park of American Samoa",
+        "Experience": "Rainforest · Beaches · Hiking",
+        "Description":
+            "A protected tropical landscape combining rainforest, "
+            "volcanic mountains, coral reefs and remote beaches.",
+        "Longitude": -170.7000,
+        "Latitude": -14.3000,
+        "Image": "images/american_samoa.jpg"
+    },
+
+    {
+        "Country": "Tuvalu",
+        "Attraction": "Funafuti Conservation Area",
+        "Experience": "Lagoon · Coral reefs · Wildlife",
+        "Description":
+            "A marine conservation area protecting lagoon ecosystems, "
+            "coral reefs, wildlife and small islets.",
+        "Longitude": 179.1900,
+        "Latitude": -8.5200,
+        "Image": "images/tuvalu.jpg"
+    },
+
+    {
+        "Country": "Niue",
+        "Attraction": "Avaiki Cave",
+        "Experience": "Caves · Swimming · Limestone",
+        "Description":
+            "A coastal cave system with clear natural pools and "
+            "dramatic limestone formations.",
+        "Longitude": -169.8600,
+        "Latitude": -19.0500,
+        "Image": "images/niue.jpg"
+    },
+
+    {
+        "Country": "Cook Islands",
+        "Attraction": "Aitutaki Lagoon",
+        "Experience": "Lagoon · Beaches · Snorkeling",
+        "Description":
+            "A turquoise lagoon dotted with small islands and surrounded "
+            "by coral reefs and white-sand beaches.",
+        "Longitude": -159.7700,
+        "Latitude": -18.8600,
+        "Image": "images/cook_islands.jpg"
+    },
+
+    {
+        "Country": "Wallis and Futuna",
+        "Attraction": "Lalolalo Lake",
+        "Experience": "Lake · Volcanic landscape · Nature",
+        "Description":
+            "A dramatic volcanic crater lake surrounded by steep cliffs "
+            "and dense tropical vegetation.",
+        "Longitude": -176.2000,
+        "Latitude": -13.3000,
+        "Image": "images/wallis_and_futuna.jpg"
+    },
+
+    {
+        "Country": "Tokelau",
+        "Attraction": "Atafu Atoll",
+        "Experience": "Atoll · Lagoon · Island culture",
+        "Description":
+            "A remote low-lying coral atoll surrounded by lagoon waters "
+            "and palm-covered islets.",
+        "Longitude": -172.5000,
+        "Latitude": -8.5500,
+        "Image": "images/tokelau.jpg"
+    },
+
+    {
+        "Country": "Pitcairn",
+        "Attraction": "Bounty Bay",
+        "Experience": "History · Island landscape · Sea",
+        "Description":
+            "The historic landing area associated with the settlement "
+            "of Pitcairn Island.",
+        "Longitude": -130.1000,
+        "Latitude": -25.0667,
+        "Image": "images/pitcairn.jpg"
+    },
+
+    {
+        "Country": "Micronesia",
+        "Attraction": "Nan Madol",
+        "Experience": "Archaeology · Mangroves · Island history",
+        "Description":
+            "An ancient ceremonial complex built on artificial islets "
+            "and canals off the coast of Pohnpei.",
+        "Longitude": 158.3300,
+        "Latitude": 6.8400,
+        "Image": "images/micronesia.jpg"
+    }
+
+]
+
+
+# ============================================================
+# 2. CONVERT PYTHON DATA TO JSON
+# ============================================================
+
+attractions_json = json.dumps(
+    attractions,
+    ensure_ascii=False
+)
+
+
+# ============================================================
+# 3. HTML TEMPLATE
+# ============================================================
+
+# IMPORTANT:
+# This is deliberately NOT an f-string.
+#
+# This means JavaScript and CSS can use normal { }
+# without Python trying to interpret them.
+
+html = r"""
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>
+Pacific Island Tourism Attractions
+</title>
+
+
+<!-- D3 -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<!-- TopoJSON -->
+<script src="https://unpkg.com/topojson-client@3"></script>
+
+
+<style>
+
+
+/* ==========================================================
+   GLOBAL
+========================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    background:
+        #F7FBF7;
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color:
+        #1B5E20;
+}
+
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.page {
+
+    max-width:
+        1500px;
+
+    margin:
+        0 auto;
+
+    padding:
+        35px 38px 40px 38px;
+}
+
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        40px;
+
+    align-items:
+        flex-start;
+
+    margin-bottom:
+        22px;
+}
+
+
+.title-area {
+
+    max-width:
+        760px;
+}
+
+
+.eyebrow {
+
+    font-size:
+        12px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        2.6px;
+
+    text-transform:
+        uppercase;
+
+    color:
+        #66BB6A;
+
+    margin-bottom:
+        10px;
+}
+
+
+h1 {
+
+    margin:
+        0;
+
+    font-size:
+        48px;
+
+    letter-spacing:
+        -2px;
+
+    line-height:
+        1;
+
+    color:
+        #1B5E20;
+}
+
+
+.subtitle {
+
+    margin-top:
+        16px;
+
+    color:
+        #527A57;
+
+    font-size:
+        16px;
+
+    line-height:
+        1.6;
+
+    max-width:
+        700px;
+}
+
+
+
+/* ==========================================================
+   INTRO BOX
+========================================================== */
+
+.intro-box {
+
+    width:
+        350px;
+
+    padding:
+        19px 21px;
+
+    background:
+        #E8F5E9;
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        18px;
+}
+
+
+.intro-tag {
+
+    font-size:
+        11px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        2px;
+
+    font-weight:
+        800;
+
+    color:
+        #66BB6A;
+}
+
+
+.intro-title {
+
+    margin-top:
+        7px;
+
+    font-size:
+        19px;
+
+    font-weight:
+        750;
+
+    color:
+        #1B5E20;
+}
+
+
+.intro-text {
+
+    margin-top:
+        7px;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.55;
+
+    color:
+        #527A57;
+}
+
+
+
+/* ==========================================================
+   MAP CONTAINER
+========================================================== */
+
+.map-wrapper {
+
+    width:
+        100%;
+
+    height:
+        780px;
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        24px;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #E8F5E9 0%,
+            #F4FAF4 52%,
+            #E8F5E9 100%
+        );
+}
+
+
+#pacific-map {
+
+    display:
+        block;
+
+    width:
+        100%;
+
+    height:
+        780px;
+}
+
+
+
+/* ==========================================================
+   MAP
+========================================================== */
+
+.sphere {
+
+    fill:
+        #E8F5E9;
+}
+
+
+.graticule {
+
+    fill:
+        none;
+
+    stroke:
+        #A5D6A7;
+
+    stroke-width:
+        0.6;
+
+    stroke-opacity:
+        0.35;
+}
+
+
+.land {
+
+    fill:
+        #A5D6A7;
+
+    stroke:
+        #FFFFFF;
+
+    stroke-width:
+        0.7;
+}
+
+
+.coast-glow {
+
+    fill:
+        none;
+
+    stroke:
+        #66BB6A;
+
+    stroke-opacity:
+        0.16;
+
+    stroke-width:
+        4;
+}
+
+
+
+/* ==========================================================
+   PACIFIC TEXT
+========================================================== */
+
+.ocean-title {
+
+    fill:
+        #1B5E20;
+
+    opacity:
+        0.07;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        12px;
+
+    font-size:
+        40px;
+}
+
+
+
+/* ==========================================================
+   MARKERS
+========================================================== */
+
+.marker-halo {
+
+    fill:
+        #E8F5E9;
+
+    stroke:
+        #1B5E20;
+
+    stroke-width:
+        1.5;
+
+    opacity:
+        0.90;
+}
+
+
+.marker {
+
+    fill:
+        #66BB6A;
+
+    stroke:
+        #1B5E20;
+
+    stroke-width:
+        2;
+
+    cursor:
+        pointer;
+}
+
+
+.marker:hover {
+
+    fill:
+        #1B5E20;
+}
+
+
+.marker-ring {
+
+    fill:
+        none;
+
+    stroke:
+        #66BB6A;
+
+    stroke-width:
+        1.5;
+
+    pointer-events:
+        none;
+}
+
+
+
+/* ==========================================================
+   COUNTRY LABEL
+========================================================== */
+
+.country-label {
+
+    fill:
+        #1B5E20;
+
+    font-weight:
+        750;
+
+    font-size:
+        10px;
+
+    paint-order:
+        stroke;
+
+    stroke:
+        #E8F5E9;
+
+    stroke-width:
+        4px;
+
+    stroke-linejoin:
+        round;
+
+    pointer-events:
+        none;
+}
+
+
+
+/* ==========================================================
+   ATTRACTION CARD
+========================================================== */
+
+.attraction-card {
+
+    position:
+        absolute;
+
+    right:
+        25px;
+
+    top:
+        25px;
+
+    width:
+        365px;
+
+    background:
+        rgba(247,251,247,0.98);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        18px;
+
+    box-shadow:
+        0 14px 45px
+        rgba(27,94,32,0.20);
+
+    overflow:
+        hidden;
+
+    opacity:
+        0;
+
+    transform:
+        translateY(8px);
+
+    pointer-events:
+        none;
+
+    transition:
+        opacity 0.20s ease,
+        transform 0.20s ease;
+
+    z-index:
+        30;
+}
+
+
+.attraction-card.visible {
+
+    opacity:
+        1;
+
+    transform:
+        translateY(0);
+}
+
+
+
+/* ==========================================================
+   POSTCARD IMAGE
+========================================================== */
+
+.card-image-wrap {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    height:
+        350px;
+
+    overflow:
+        hidden;
+
+    background:
+        #E8F5E9;
+}
+
+
+.card-image {
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
+
+    display:
+        block;
+
+    transition:
+        transform 0.35s ease;
+}
+
+
+.attraction-card.visible
+.card-image {
+
+    transform:
+        scale(1.02);
+}
+
+
+.card-image-overlay {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            rgba(27,94,32,0.00) 55%,
+            rgba(27,94,32,0.55) 100%
+        );
+}
+
+
+.card-country {
+
+    position:
+        absolute;
+
+    left:
+        18px;
+
+    bottom:
+        15px;
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        15px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+
+    text-shadow:
+        0 2px 8px
+        rgba(0,0,0,0.25);
+}
+
+
+
+/* ==========================================================
+   CARD TEXT
+========================================================== */
+
+.card-content {
+
+    padding:
+        19px 20px 22px 20px;
+}
+
+
+.card-tag {
+
+    color:
+        #66BB6A;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.6px;
+
+    text-transform:
+        uppercase;
+}
+
+
+.card-title {
+
+    color:
+        #1B5E20;
+
+    font-size:
+        24px;
+
+    font-weight:
+        800;
+
+    line-height:
+        1.1;
+
+    margin-top:
+        6px;
+}
+
+
+.card-experience {
+
+    color:
+        #527A57;
+
+    font-size:
+        11px;
+
+    font-weight:
+        750;
+
+    margin-top:
+        9px;
+
+    line-height:
+        1.45;
+}
+
+
+.card-description {
+
+    margin-top:
+        13px;
+
+    color:
+        #527A57;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.55;
+}
+
+
+
+/* ==========================================================
+   INSTRUCTIONS
+========================================================== */
+
+.map-instruction {
+
+    position:
+        absolute;
+
+    left:
+        24px;
+
+    top:
+        24px;
+
+    width:
+        220px;
+
+    background:
+        rgba(232,245,233,0.94);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        14px;
+
+    padding:
+        12px 15px;
+}
+
+
+.instruction-title {
+
+    font-size:
+        10px;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        1.5px;
+
+    font-weight:
+        800;
+
+    color:
+        #1B5E20;
+}
+
+
+.instruction-text {
+
+    margin-top:
+        6px;
+
+    color:
+        #527A57;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.45;
+}
+
+
+
+/* ==========================================================
+   STORY BOX
+========================================================== */
+
+.story-box {
+
+    position:
+        absolute;
+
+    left:
+        24px;
+
+    bottom:
+        24px;
+
+    width:
+        315px;
+
+    background:
+        rgba(232,245,233,0.94);
+
+    border:
+        1px solid #A5D6A7;
+
+    border-radius:
+        15px;
+
+    padding:
+        15px 17px;
+}
+
+
+.story-heading {
+
+    color:
+        #1B5E20;
+
+    font-size:
+        11px;
+
+    text-transform:
+        uppercase;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1.5px;
+}
+
+
+.story-text {
+
+    margin-top:
+        7px;
+
+    color:
+        #527A57;
+
+    font-size:
+        12px;
+
+    line-height:
+        1.5;
+}
+
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.footer {
+
+    margin-top:
+        13px;
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    color:
+        #709075;
+
+    font-size:
+        11px;
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .header {
+
+        flex-direction:
+            column;
+    }
+
+
+    .intro-box {
+
+        width:
+            100%;
+    }
+
+
+    .attraction-card {
+
+        width:
+            320px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<div class="header">
+
+
+    <div class="title-area">
+
+        <div class="eyebrow">
+            Pacific Tourism · Chapter 2
+        </div>
+
+
+        <h1>
+            Nature is the destination.
+        </h1>
+
+
+        <div class="subtitle">
+
+            Beaches, coral reefs, lagoons, marine wildlife and
+            distinctive island landscapes are at the heart of
+            tourism across the Pacific.
+
+            Explore the map to discover an emblematic attraction
+            from each island destination.
+
+        </div>
+
+    </div>
+
+
+
+    <div class="intro-box">
+
+        <div class="intro-tag">
+            Tourism & ecosystems
+        </div>
+
+
+        <div class="intro-title">
+
+            The attraction is often
+            the ecosystem itself.
+
+        </div>
+
+
+        <div class="intro-text">
+
+            Many of the experiences that attract visitors to
+            Pacific islands depend directly on healthy coastal
+            and marine environments.
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ======================================================
+     MAP
+====================================================== -->
+
+<div class="map-wrapper">
+
+
+    <svg id="pacific-map"></svg>
+
+
+
+    <!-- INSTRUCTIONS -->
+
+    <div class="map-instruction">
+
+        <div class="instruction-title">
+            Explore the map
+        </div>
+
+        <div class="instruction-text">
+
+            Hover over an island marker to discover
+            its featured tourism attraction.
+
+        </div>
+
+    </div>
+
+
+
+    <!-- POSTCARD / ATTRACTION CARD -->
+
+    <div
+        class="attraction-card"
+        id="attraction-card"
+    >
+
+        <div class="card-image-wrap">
+
+
+            <img
+                id="card-image"
+                class="card-image"
+                src=""
+                alt=""
+            >
+
+
+            <div
+                class="card-image-overlay"
+            ></div>
+
+
+            <div
+                id="card-country"
+                class="card-country"
+            ></div>
+
+
+        </div>
+
+
+
+        <div class="card-content">
+
+
+            <div class="card-tag">
+                Featured attraction
+            </div>
+
+
+            <div
+                id="card-title"
+                class="card-title"
+            ></div>
+
+
+            <div
+                id="card-experience"
+                class="card-experience"
+            ></div>
+
+
+            <div
+                id="card-description"
+                class="card-description"
+            ></div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- STORY -->
+
+    <div class="story-box">
+
+        <div class="story-heading">
+            Tourism is an economic pillar
+        </div>
+
+        <div class="story-text">
+
+            Across many Pacific Island economies, tourism represents
+            a substantial share of economic activity.
+
+            This dependence makes the sector central to income,
+            employment and economic growth.
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<div class="footer">
+
+    <div>
+        Hover over a destination to reveal its tourism postcard.
+    </div>
+
+    <div>
+        Map: Natural Earth / World Atlas · Interactive visualization: D3.js
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- ========================================================
+     JAVASCRIPT
+======================================================== -->
+
+<script>
+
+
+/* ==========================================================
+   DATA FROM PYTHON
+========================================================== */
+
+const attractions =
+    __ATTRACTIONS_JSON__;
+
+
+
+/* ==========================================================
+   SVG
+========================================================== */
+
+const svg =
+    d3.select("#pacific-map");
+
+
+const wrapper =
+    document.querySelector(".map-wrapper");
+
+
+const width =
+    wrapper.clientWidth;
+
+
+const height =
+    780;
+
+
+svg
+
+    .attr(
+        "viewBox",
+        `0 0 ${width} ${height}`
+    )
+
+    .attr(
+        "preserveAspectRatio",
+        "xMidYMid meet"
+    );
+
+
+
+/* ==========================================================
+   PACIFIC PROJECTION
+========================================================== */
+
+const projection =
+
+    d3.geoNaturalEarth1()
+
+        .rotate([
+            -170,
+            0
+        ])
+
+        .center([
+            0,
+            -3
+        ])
+
+        .scale(
+            width * 0.5
+        )
+
+        .translate([
+            width / 2,
+            height / 2 + 20
+        ]);
+
+
+const path =
+    d3.geoPath(
+        projection
+    );
+
+
+
+/* ==========================================================
+   SPHERE
+========================================================== */
+
+svg
+
+    .append("path")
+
+    .datum({
+        type:
+            "Sphere"
+    })
+
+    .attr(
+        "class",
+        "sphere"
+    )
+
+    .attr(
+        "d",
+        path
+    );
+
+
+
+/* ==========================================================
+   GRATICULE
+========================================================== */
+
+const graticule =
+    d3.geoGraticule10();
+
+
+svg
+
+    .append("path")
+
+    .datum(
+        graticule
+    )
+
+    .attr(
+        "class",
+        "graticule"
+    )
+
+    .attr(
+        "d",
+        path
+    );
+
+
+
+/* ==========================================================
+   PACIFIC LABEL
+========================================================== */
+
+svg
+
+    .append("text")
+
+    .attr(
+        "class",
+        "ocean-title"
+    )
+
+    .attr(
+        "x",
+        width / 2
+    )
+
+    .attr(
+        "y",
+        height / 2 + 15
+    )
+
+    .attr(
+        "text-anchor",
+        "middle"
+    )
+
+    .text(
+        "PACIFIC"
+    );
+
+
+
+/* ==========================================================
+   MAP LAYERS
+========================================================== */
+
+const mapLayer =
+    svg.append("g");
+
+
+const markerLayer =
+    svg.append("g");
+
+
+const labelLayer =
+    svg.append("g");
+
+
+
+/* ==========================================================
+   LOAD WORLD MAP
+========================================================== */
+
+d3.json(
+    "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+)
+
+.then(
+
+    world => {
+
+
+        const countries =
+
+            topojson.feature(
+
+                world,
+
+                world.objects.countries
+
+            );
+
+
+
+        /* ----------------------------------------------
+           COAST GLOW
+        ---------------------------------------------- */
+
+        mapLayer
+
+            .append("path")
+
+            .datum(
+                countries
+            )
+
+            .attr(
+                "class",
+                "coast-glow"
+            )
+
+            .attr(
+                "d",
+                path
+            );
+
+
+
+        /* ----------------------------------------------
+           LAND
+        ---------------------------------------------- */
+
+        mapLayer
+
+            .selectAll(".land")
+
+            .data(
+                countries.features
+            )
+
+            .enter()
+
+            .append("path")
+
+            .attr(
+                "class",
+                "land"
+            )
+
+            .attr(
+                "d",
+                path
+            );
+
+
+        drawAttractions();
+
+    }
+
+)
+
+.catch(
+
+    error => {
+
+        console.error(
+            "World map failed to load:",
+            error
+        );
+
+
+        drawAttractions();
+
+    }
+
+);
+
+
+
+/* ==========================================================
+   DRAW TOURISM LOCATIONS
+========================================================== */
+
+function drawAttractions() {
+
+
+    attractions.forEach(
+
+        d => {
+
+
+            const coords =
+
+                projection([
+                    +d.Longitude,
+                    +d.Latitude
+                ]);
+
+
+            d.x =
+                coords[0];
+
+
+            d.y =
+                coords[1];
+
+        }
+
+    );
+
+
+
+    /* ======================================================
+       PULSE RINGS
+    ====================================================== */
+
+    const rings =
+
+        markerLayer
+
+            .selectAll(".marker-ring")
+
+            .data(
+                attractions
+            )
+
+            .enter()
+
+            .append("circle")
+
+            .attr(
+                "class",
+                "marker-ring"
+            )
+
+            .attr(
+                "cx",
+                d => d.x
+            )
+
+            .attr(
+                "cy",
+                d => d.y
+            )
+
+            .attr(
+                "r",
+                10
+            );
+
+
+
+    function animateRings() {
+
+
+        rings
+
+            .attr(
+                "r",
+                9
+            )
+
+            .attr(
+                "opacity",
+                0.38
+            )
+
+            .transition()
+
+            .duration(
+                2600
+            )
+
+            .ease(
+                d3.easeCubicOut
+            )
+
+            .attr(
+                "r",
+                19
+            )
+
+            .attr(
+                "opacity",
+                0
+            )
+
+            .on(
+                "end",
+                animateRings
+            );
+
+    }
+
+
+    animateRings();
+
+
+
+    /* ======================================================
+       HALO
+    ====================================================== */
+
+    markerLayer
+
+        .selectAll(".marker-halo")
+
+        .data(
+            attractions
+        )
+
+        .enter()
+
+        .append("circle")
+
+        .attr(
+            "class",
+            "marker-halo"
+        )
+
+        .attr(
+            "cx",
+            d => d.x
+        )
+
+        .attr(
+            "cy",
+            d => d.y
+        )
+
+        .attr(
+            "r",
+            8
+        );
+
+
+
+    /* ======================================================
+       MAIN MARKERS
+    ====================================================== */
+
+    const markers =
+
+        markerLayer
+
+            .selectAll(".marker")
+
+            .data(
+                attractions
+            )
+
+            .enter()
+
+            .append("circle")
+
+            .attr(
+                "class",
+                "marker"
+            )
+
+            .attr(
+                "cx",
+                d => d.x
+            )
+
+            .attr(
+                "cy",
+                d => d.y
+            )
+
+            .attr(
+                "r",
+                5
+            );
+
+
+
+    /* ======================================================
+       HOVER
+    ====================================================== */
+
+    markers
+
+        .on(
+
+            "mouseenter",
+
+            function(event, d) {
+
+
+                d3.select(this)
+
+                    .transition()
+
+                    .duration(
+                        160
+                    )
+
+                    .attr(
+                        "r",
+                        8
+                    );
+
+
+                showCard(d);
+
+            }
+
+        )
+
+
+        .on(
+
+            "mouseleave",
+
+            function() {
+
+
+                d3.select(this)
+
+                    .transition()
+
+                    .duration(
+                        160
+                    )
+
+                    .attr(
+                        "r",
+                        5
+                    );
+
+
+                hideCard();
+
+            }
+
+        );
+
+
+
+    /* ======================================================
+       COUNTRY LABELS
+    ====================================================== */
+
+    labelLayer
+
+        .selectAll(".country-label")
+
+        .data(
+            attractions
+        )
+
+        .enter()
+
+        .append("text")
+
+        .attr(
+            "class",
+            "country-label"
+        )
+
+        .attr(
+            "x",
+            d => d.x + 11
+        )
+
+        .attr(
+            "y",
+            d => d.y + 4
+        )
+
+        .text(
+            d => d.Country
+        );
+
+}
+
+
+
+/* ==========================================================
+   POSTCARD CARD
+========================================================== */
+
+const attractionCard =
+    document.getElementById(
+        "attraction-card"
+    );
+
+
+const cardImage =
+    document.getElementById(
+        "card-image"
+    );
+
+
+const cardCountry =
+    document.getElementById(
+        "card-country"
+    );
+
+
+const cardTitle =
+    document.getElementById(
+        "card-title"
+    );
+
+
+const cardExperience =
+    document.getElementById(
+        "card-experience"
+    );
+
+
+const cardDescription =
+    document.getElementById(
+        "card-description"
+    );
+
+
+
+function showCard(d) {
+
+
+    cardImage.src =
+        d.Image;
+
+
+    cardImage.alt =
+        d.Attraction;
+
+
+    cardCountry.textContent =
+        d.Country;
+
+
+    cardTitle.textContent =
+        d.Attraction;
+
+
+    cardExperience.textContent =
+        d.Experience;
+
+
+    cardDescription.textContent =
+        d.Description;
+
+
+    attractionCard
+
+        .classList
+
+        .add(
+            "visible"
+        );
+
+}
+
+
+
+function hideCard() {
+
+
+    attractionCard
+
+        .classList
+
+        .remove(
+            "visible"
+        );
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
+"""
+
+
+# ============================================================
+# 4. INJECT JSON INTO HTML
+# ============================================================
+
+html = html.replace(
+    "__ATTRACTIONS_JSON__",
+    attractions_json
+)
+
+
+# ============================================================
+# 5. SAVE HTML
+# ============================================================
+
+output_file = (
+    Path.cwd()
+    / "pacific_tourism_attractions.html"
+)
+
+
+output_file.write_text(
+    html,
+    encoding="utf-8"
+)
+
+
+print(
+    "\nMap saved to:\n"
+    f"{output_file}\n"
+)
+
+
+# ============================================================
+# 6. OPEN IN BROWSER
+# ============================================================
+
+webbrowser.open(
+    output_file.resolve().as_uri()
+)

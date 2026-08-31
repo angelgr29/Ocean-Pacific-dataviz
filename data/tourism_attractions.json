@@ -1,0 +1,202 @@
+[
+  {
+    "Country": "Fiji",
+    "Attraction": "Coral Coast",
+    "Experience": "Coral reefs · Beaches · Snorkeling",
+    "Description": "A tropical coastline known for beaches, shallow coral reefs and accessible snorkeling.",
+    "Longitude": 178.065,
+    "Latitude": -17.7134,
+    "ImageHint": "fiji",
+    "Flag": "🇫🇯"
+  },
+  {
+    "Country": "Solomon Islands",
+    "Attraction": "Marovo Lagoon",
+    "Experience": "Lagoon · Diving · Coral reefs",
+    "Description": "A vast lagoon system surrounded by coral reefs, forested islands and exceptional diving sites.",
+    "Longitude": 160.1562,
+    "Latitude": -9.6457,
+    "ImageHint": "solomon_islands",
+    "Flag": "🇸🇧"
+  },
+  {
+    "Country": "Samoa",
+    "Attraction": "To Sua Ocean Trench",
+    "Experience": "Swimming · Nature · Coastal landscape",
+    "Description": "A dramatic natural swimming hole connected to the ocean and surrounded by lush tropical vegetation.",
+    "Longitude": -172.1046,
+    "Latitude": -13.759,
+    "ImageHint": "samoa",
+    "Flag": "🇼🇸"
+  },
+  {
+    "Country": "Kiribati",
+    "Attraction": "Kiritimati Lagoon",
+    "Experience": "Lagoon · Fishing · Marine wildlife",
+    "Description": "A vast lagoon environment surrounded by coral ecosystems and remote island landscapes.",
+    "Longitude": -157.363,
+    "Latitude": 1.8709,
+    "ImageHint": "kiribati",
+    "Flag": "🇰🇮"
+  },
+  {
+    "Country": "Marshall Islands",
+    "Attraction": "Bikini Atoll",
+    "Experience": "Diving · History · Coral reefs",
+    "Description": "A remote atoll internationally known for underwater cultural heritage and marine biodiversity.",
+    "Longitude": 165.3768,
+    "Latitude": 7.1,
+    "ImageHint": "marshall_islands",
+    "Flag": "🇲🇭"
+  },
+  {
+    "Country": "Northern Mariana Islands",
+    "Attraction": "The Grotto",
+    "Experience": "Caves · Diving · Limestone",
+    "Description": "A famous limestone cavern and diving site on Saipan with striking blue water.",
+    "Longitude": 145.75,
+    "Latitude": 15.2,
+    "ImageHint": "northern_mariana_islands",
+    "Flag": "🇲🇵"
+  },
+  {
+    "Country": "Guam",
+    "Attraction": "Tumon Bay",
+    "Experience": "Beaches · Snorkeling · Coastal tourism",
+    "Description": "Guam's principal tourism district combines a protected bay, beaches, resorts and accessible snorkeling.",
+    "Longitude": 144.7937,
+    "Latitude": 13.4443,
+    "ImageHint": "guam",
+    "Flag": "🇬🇺"
+  },
+  {
+    "Country": "New Caledonia",
+    "Attraction": "Île des Pins",
+    "Experience": "Lagoon · Beaches · Nature",
+    "Description": "An iconic island landscape known for turquoise waters, white beaches and distinctive columnar pine trees.",
+    "Longitude": 167.5,
+    "Latitude": -22.6,
+    "ImageHint": "new_caledonia",
+    "Flag": "🇳🇨"
+  },
+  {
+    "Country": "French Polynesia",
+    "Attraction": "Bora Bora Lagoon",
+    "Experience": "Lagoon · Beaches · Snorkeling",
+    "Description": "Turquoise lagoon waters, coral reefs and dramatic volcanic landscapes define one of Polynesia's most iconic destinations.",
+    "Longitude": -151.7415,
+    "Latitude": -16.5004,
+    "ImageHint": "french_polynesia",
+    "Flag": "🇵🇫"
+  },
+  {
+    "Country": "Tonga",
+    "Attraction": "Vavaʻu Whale Watching",
+    "Experience": "Whales · Marine wildlife · Sailing",
+    "Description": "Tonga is internationally known for seasonal encounters with humpback whales in its tropical waters.",
+    "Longitude": -173.9833,
+    "Latitude": -18.65,
+    "ImageHint": "tonga",
+    "Flag": "🇹🇴"
+  },
+  {
+    "Country": "Vanuatu",
+    "Attraction": "Espiritu Santo Blue Holes",
+    "Experience": "Swimming · Rainforest · Freshwater",
+    "Description": "Natural freshwater pools surrounded by dense tropical forest on the island of Espiritu Santo.",
+    "Longitude": 167.9596,
+    "Latitude": -15.3767,
+    "ImageHint": "vanuatu",
+    "Flag": "🇻🇺"
+  },
+  {
+    "Country": "Palau",
+    "Attraction": "Rock Islands",
+    "Experience": "Diving · Kayaking · Marine ecosystems",
+    "Description": "Hundreds of forest-covered limestone islands surrounded by turquoise lagoons and diverse marine ecosystems.",
+    "Longitude": 134.5825,
+    "Latitude": 7.515,
+    "ImageHint": "palau",
+    "Flag": "🇵🇼"
+  },
+  {
+    "Country": "American Samoa",
+    "Attraction": "National Park of American Samoa",
+    "Experience": "Rainforest · Beaches · Hiking",
+    "Description": "A protected tropical landscape combining rainforest, volcanic mountains, coral reefs and remote beaches.",
+    "Longitude": -170.7,
+    "Latitude": -14.3,
+    "ImageHint": "american_samoa",
+    "Flag": "🇦🇸"
+  },
+  {
+    "Country": "Tuvalu",
+    "Attraction": "Funafuti Conservation Area",
+    "Experience": "Lagoon · Coral reefs · Wildlife",
+    "Description": "A marine conservation area protecting lagoon ecosystems, coral reefs, wildlife and small islets.",
+    "Longitude": 179.19,
+    "Latitude": -8.52,
+    "ImageHint": "tuvalu",
+    "Flag": "🇹🇻"
+  },
+  {
+    "Country": "Niue",
+    "Attraction": "Avaiki Cave",
+    "Experience": "Caves · Swimming · Limestone",
+    "Description": "A coastal cave system with clear natural pools and dramatic limestone formations.",
+    "Longitude": -169.86,
+    "Latitude": -19.05,
+    "ImageHint": "niue",
+    "Flag": "🇳🇺"
+  },
+  {
+    "Country": "Cook Islands",
+    "Attraction": "Aitutaki Lagoon",
+    "Experience": "Lagoon · Beaches · Snorkeling",
+    "Description": "A turquoise lagoon dotted with small islands and surrounded by coral reefs and white-sand beaches.",
+    "Longitude": -159.77,
+    "Latitude": -18.86,
+    "ImageHint": "cook_islands",
+    "Flag": "🇨🇰"
+  },
+  {
+    "Country": "Wallis and Futuna",
+    "Attraction": "Lalolalo Lake",
+    "Experience": "Lake · Volcanic landscape · Nature",
+    "Description": "A dramatic volcanic crater lake surrounded by steep cliffs and dense tropical vegetation.",
+    "Longitude": -176.2,
+    "Latitude": -13.3,
+    "ImageHint": "wallis_and_futuna",
+    "Flag": "🇼🇫"
+  },
+  {
+    "Country": "Tokelau",
+    "Attraction": "Atafu Atoll",
+    "Experience": "Atoll · Lagoon · Island culture",
+    "Description": "A remote low-lying coral atoll surrounded by lagoon waters and palm-covered islets.",
+    "Longitude": -172.5,
+    "Latitude": -8.55,
+    "ImageHint": "tokelau",
+    "Flag": "🇹🇰"
+  },
+  {
+    "Country": "Pitcairn",
+    "Attraction": "Bounty Bay",
+    "Experience": "History · Island landscape · Sea",
+    "Description": "The historic landing area associated with the settlement of Pitcairn Island.",
+    "Longitude": -130.1,
+    "Latitude": -25.0667,
+    "ImageHint": "pitcairn",
+    "Flag": "🇵🇳"
+  },
+  {
+    "Country": "Micronesia",
+    "Attraction": "Nan Madol",
+    "Experience": "Archaeology · Mangroves · Island history",
+    "Description": "An ancient ceremonial complex built on artificial islets and canals off the coast of Pohnpei.",
+    "Longitude": 158.33,
+    "Latitude": 6.84,
+    "ImageHint": "micronesia",
+    "Flag": "🇫🇲"
+  }
+]
